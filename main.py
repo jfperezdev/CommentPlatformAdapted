@@ -10,7 +10,7 @@ Python Project:
 
 def main() :
     """runs the whole project."""
-    print 'hola mundo';
+    print 'hola mundo en python';
     pass
     
 if __name__ == "__main__" :
