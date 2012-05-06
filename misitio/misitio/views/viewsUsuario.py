@@ -1,8 +1,6 @@
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
-from django.shortcuts import render
 import xml.etree.ElementTree as xml
-import collections
 import misitio.models.Usuario
 
 def registrarUsuario(request):

@@ -17,8 +17,7 @@ class Usuario:
                 self.foto = foto
 	
 
-	def registrarse(self):
-	    
+	def registrarse(self): 
 	    try:
 		    pool = ConnectionPool('baseDeDatos')
 	    	    col_fam = pycassa.ColumnFamily(pool, 'Usuario')	
