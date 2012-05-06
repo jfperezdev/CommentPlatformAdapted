@@ -1,8 +1,6 @@
 from django.conf.urls.defaults import *
-from misitio.views import usuariosRegistrados,enviarXml,registrarUsuario
+from misitio.views.viewsUsuario import registrarUsuario
 urlpatterns = patterns('',
-(r'^time/$', usuariosRegistrados),
-(r'^time2/$', enviarXml),
-(r'^registrarUsuario/$',registrarUsuario),
+(r'^Usuario/registrar_usuario/$',registrarUsuario),
 )
 
