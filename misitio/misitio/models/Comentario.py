@@ -60,4 +60,40 @@ def generarIdComentario():
 		     else:
 		        nuevoId = unicode(int(listaIdComentario[0]) + 1)
 		        return nuevoId
+
+############################################################
+#-------------------- Lista  Comentario--------------------#
+def listaComentario(nickName):
+	pool = ConnectionPool('baseDeDatos')
+	col_fam = pycassa.ColumnFamily(pool, 'Comentario')
+	resultado = col_fam.get_range(column_start='adjunto', column_finish='token')
+	encontrado = False
+	listaDeComentarios = []
+	for key,columns in resultado:
+		if columns['nickName'] == nickName:
+			listaDeComentarios.append(columns['nickName']+":"+columns['texto']+":"+columns['token']+":"+columns['adjunto'])
+		encontrado = True
+
+	if(encontrado):
+		return listaDeComentarios
+	else:
+	        return "FALSE"
+############################################################
+#-------------------- Lista  Respuesta --------------------#
+def listaRespuesta(usuarioRespuesta):
+	
+	pool = ConnectionPool('baseDeDatos')
+	col_fam = pycassa.ColumnFamily(pool, 'Comentario')
+	resultado = col_fam.get_range(column_start='adjunto', column_finish='usuarioRespuesta')
+	encontrado = False
+	listaDeComentarios = []
+	for key,columns in resultado:
+		if len(columns)>5 and columns['usuarioRespuesta'] == usuarioRespuesta:
+			listaDeComentarios.append(columns['usuarioRespuesta']+":"+columns['nickName']+":"+columns['texto']+":"+columns['token']+":"+columns['adjunto'])
+		encontrado = True
+
+	if(encontrado):
+		return listaDeComentarios
+	else:
+	        return "FALSE"
 	
