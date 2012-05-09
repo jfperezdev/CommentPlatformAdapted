@@ -1,0 +1,6 @@
+<Comentario>
+	<nickName>{{ nickName }}</nickName>
+	<texto> {{ texto }} </texto>
+	<adjunto> {{ adjunto }} </adjunto>
+        <token> {{ token }} </token>
+</Comentario>

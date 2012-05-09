@@ -3,20 +3,58 @@ from pycassa.pool import ConnectionPool
 from pycassa.columnfamily import ColumnFamily
 
 class Comentario:
-	def __init__ (self, texto, adjunto, nickName, token, fecha):
-		self.texto = texto
-                self.adjunto = adjunto
-		self.nickName = nickName
-		self.token = token
-                self.fecha = fecha
+	pass
 
 	def registrarComentario (self):
 		try:
-			    pool = ConnectionPool('baseDeDatos')
-		    	    col_fam = pycassa.ColumnFamily(pool, 'Comentario')	
-			    col_fam.insert (self.nickName, {'texto': self.texto ,'adjunto': self.adjunto, 'fecha': self.fecha})
+		    pool = ConnectionPool('baseDeDatos')
+		    col_fam = pycassa.ColumnFamily(pool,'Comentario')
+		    elId = generarIdComentario()
+		    if(elId != "FALSE"):
+		    	self.idComentario = elId 
+		    	col_fam.insert (self.idComentario, {'nickName': self.nickName,'texto': self.texto ,'adjunto': self.adjunto, 'fecha': self.fecha, 'token': self.token})
+		    else:
+			return "FALSE"
 		except Exception:
 		     return "FALSE"
 		else:
 		     return "TRUE"
+	
+
+	def responderComentario(self):
+		try:
+			    pool = ConnectionPool('baseDeDatos')
+		    	    col_fam = pycassa.ColumnFamily(pool,'Comentario')
+			    col_fam.insert (self.nickName, {'usuarioRespuesta': self.usuarioRespuesta,'texto': self.texto ,'adjunto': self.adjunto, 'fecha': self.fecha, 'token': self.token})
+		except Exception:
+		     return "FALSE"
+		else:
+		     return "TRUE"
+
+
+############################################################
+#----------------- GenerarId Comentario--------------------#
+
+def generarIdComentario():
+		vacio = True
+		try:
+			pool = ConnectionPool('baseDeDatos')
+			col_fam = pycassa.ColumnFamily(pool,'Comentario')
+			resultado = col_fam.get_range(column_start='nickName', column_finish='texto')
+			arreglo = []
+
+			for key,columns in resultado:
+				arreglo.append(key)
+				vacio = False
+
+			listaIdComentario = sorted(arreglo,reverse=True)
+
+		except Exception:
+		     return "FALSE"
+		else:
+		     if vacio == True:
+			return '1'
+		     else:
+		        nuevoId = unicode(int(listaIdComentario[0]) + 1)
+		        return nuevoId
 	
