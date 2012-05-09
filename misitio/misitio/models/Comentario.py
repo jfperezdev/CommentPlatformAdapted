@@ -25,7 +25,10 @@ class Comentario:
 		try:
 			    pool = ConnectionPool('baseDeDatos')
 		    	    col_fam = pycassa.ColumnFamily(pool,'Comentario')
-			    col_fam.insert (self.nickName, {'usuarioRespuesta': self.usuarioRespuesta,'texto': self.texto ,'adjunto': self.adjunto, 'fecha': self.fecha, 'token': self.token})
+		    	    elId = generarIdComentario()
+		    	    if(elId != "FALSE"):
+		    	       self.idRespuesta = elId 
+			    col_fam.insert (self.idRespuesta, {'nickName': self.nickName,'idComentario': self.idComentario,'usuarioRespuesta': 		self.usuarioRespuesta,'texto': self.texto ,'adjunto': self.adjunto, 'fecha': self.fecha, 'token': self.token})
 		except Exception:
 		     return "FALSE"
 		else:

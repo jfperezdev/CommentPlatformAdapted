@@ -4,12 +4,6 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-   # Django settings for misitio project.
-
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
-
-ADMINS = (
     # ('Your Name', 'your_email@example.com'),
 )
 
