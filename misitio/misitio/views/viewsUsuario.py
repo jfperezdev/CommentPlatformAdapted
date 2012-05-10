@@ -3,7 +3,9 @@ from django.http import HttpRequest
 from django.shortcuts import render_to_response
 import xml.etree.ElementTree as xml
 import misitio.models.Usuario as GestionUsuario
+import misitio.models.Token as GestionToken
 import datetime
+import time
 import pycassa
 from pycassa.pool import ConnectionPool
 from pycassa.columnfamily import ColumnFamily
@@ -121,17 +123,19 @@ def modificarUsuario(request):
 
 def generarIdToken():
 		vacio = True
+		cont = 0
 		try:
 			pool = ConnectionPool('baseDeDatos')
 			col_fam = pycassa.ColumnFamily(pool,'Token')
-			resultado = col_fam.get_range(column_start='fecha', column_finish='nickName')
-			arreglo.range(900)
+			resultado = col_fam.get_range(column_start='accion', column_finish='nickName')
+			arreglo = []
 
 			for key,columns in resultado:
 				arreglo.append(key)
+				cont = cont+1
 				vacio = False
 
-			listaIdToken = sorted(arreglo,reverse=True)
+			
 
 		except Exception:
 		     return "FALSE"
@@ -139,8 +143,59 @@ def generarIdToken():
 		     if vacio == True:
 			return '1'
 		     else:
-		        nuevoId = str(int(listaIdToken[0]) + 10)
+		        nuevoId = unicode(cont+1)
 		        return nuevoId
+
+
+
+
+
+def validarUsuarioIp(nickName, ip):
+	     try:
+		    
+	    	    pool = ConnectionPool('baseDeDatos')
+	    	    col_fam = pycassa.ColumnFamily(pool, 'Token')
+		    resultado = col_fam.get_range(column_start='accion', column_finish='nickName')
+		    arreglo = []
+		    
+		    for key,columns in resultado:
+			 
+                    	nickName2 = columns['nickName']
+                    	ip2 = columns ['ip']
+		        nowToken = columns ['fecha']
+						
+
+		    	if (nickName2==nickName) and(ip2 == ip):
+
+				   nowToken2 = columns['fecha'].split(".")
+			    	   nowToken = datetime.datetime(*time.strptime(nowToken2[0],'%Y-%m-%d %H:%M:%S')[0:6])
+				   f=open("FECHATOKEN.txt","w")
+				   f.write(columns['fecha'])
+				   f.close()
+				   now = datetime.datetime.now()
+			    	   diferenciaToken = now - nowToken
+				   f=open("token.txt","w")
+				   f.write(str(diferenciaToken))
+				   f.close()
+				   horas = str(diferenciaToken).split(":")
+				   
+				   f=open("RESULTADO.txt","w")
+				   f.write(str(horas))
+				   f.close()
+				   
+				   minutos = int(horas[1])
+				   f=open("RESULTADO3.txt","w")
+				   f.write(str (minutos))
+				   f.close()
+				   
+				   if (horas[0]=="0") and (minutos<=1):
+				   	return "FALSE"
+			
+		    return "TRUE"
+             except Exception:
+		return "FALSE"
+	     else:
+		return "TRUE"
 
 ############################################################
 #-------------------- Iniciar Sesion-----------------------#
@@ -166,17 +221,26 @@ def iniciarSesion(request):
 
     respuesta = elUsuario.validarSesion(nickName)
 
-    if respuesta == 'TRUE':
-	now = datetime.datetime.now()
-	pool = ConnectionPool('baseDeDatos')
-	col_fam = pycassa.ColumnFamily(pool, 'Token')
-	elId = generarIdToken()	
-	col_fam.insert (elId, {'ip': ip,'fecha': str(now) ,'nickName': nickName, 'accion': 'Generar Token'})
-        return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Se ha iniciado sesion satisfactoriamente con tu cuenta. El token es:" + elId},
-mimetype='application/xml')
+#   elToken = GestionToken.Token()
+ #  resp = elToken.validarUsuarioIp(nickName,ip)
+    resp = validarUsuarioIp(nickName,ip)
+    	
+    if (respuesta == "TRUE"):
+    	    if(resp == "TRUE"):
+		now = datetime.datetime.now()
+		pool = ConnectionPool('baseDeDatos')	
+		col_fam = pycassa.ColumnFamily(pool, 'Token')
+		elId = generarIdToken()	
+		col_fam.insert (elId, {'ip': ip,'fecha': str(now) ,'nickName': nickName, 'accion': 'Generar Token', 'idToken': elId})
+		return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Se ha iniciado sesion satisfactoriamente con su cuenta. Su token es:" + elId},mimetype='application/xml')
+	    else:
+		
+		return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error el usuario tiene un token vigente"},mimetype='application/xml')
+	    	
     else:
-	return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error, el usuario es incorrecto"},
-mimetype='application/xml')
+		return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error, verifique su nickName y password"},
+	mimetype='application/xml')
 
+	    	
 
 

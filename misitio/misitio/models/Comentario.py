@@ -40,6 +40,7 @@ class Comentario:
 
 def generarIdComentario():
 		vacio = True
+		cont = 0
 		try:
 			pool = ConnectionPool('baseDeDatos')
 			col_fam = pycassa.ColumnFamily(pool,'Comentario')
@@ -48,9 +49,10 @@ def generarIdComentario():
 
 			for key,columns in resultado:
 				arreglo.append(key)
+				cont = cont+1
 				vacio = False
 
-			listaIdComentario = sorted(arreglo,reverse=True)
+			
 
 		except Exception:
 		     return "FALSE"
@@ -58,7 +60,7 @@ def generarIdComentario():
 		     if vacio == True:
 			return '1'
 		     else:
-		        nuevoId = unicode(int(listaIdComentario[0]) + 1)
+		        nuevoId = unicode(cont+1)
 		        return nuevoId
 
 ############################################################

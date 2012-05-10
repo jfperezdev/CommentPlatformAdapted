@@ -2,6 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import render_to_response
 import xml.etree.ElementTree as xml
 import misitio.models.Comentario as GestionComentario
+import misitio.models.Token as GestionToken
 import datetime
 import pycassa
 from pycassa.pool import ConnectionPool
@@ -30,11 +31,21 @@ def registrarComentario(request):
     elComentario.adjunto = adjunto
     elComentario.token = token
     elComentario.fecha = str (now)
-	    
-    if elComentario.registrarComentario() == "TRUE":	
-       return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Se ha agregado satisfactoriamente el Comentario el dia: "+elComentario.fecha},mimetype='application/xml')
+
+    elToken = GestionToken.Token()
+    ip = str(request.META['REMOTE_ADDR']) 
+    elToken.token = token
+    elToken.nickName = nickName
+    elToken.ip = ip
+  
+    if elToken.validarToken() == "TRUE":
+    	if elComentario.registrarComentario() == "TRUE":	
+       		return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Se ha agregado satisfactoriamente el Comentario el dia: "+elComentario.fecha},mimetype='application/xml')
+    	else:
+       		return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error al tratar de generar el Comentario el dia:" +elComentario.fecha},mimetype='application/xml')
     else:
-       return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error al tratar de generar el Comentario el dia:" +elComentario.fecha},mimetype='application/xml')
+	return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error el token enviado es incorrecto:"},mimetype='application/xml')
+	
 
 ############################################################
 #----------------- Responder Comentario--------------------#
