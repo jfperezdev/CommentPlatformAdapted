@@ -1,21 +1,10 @@
 import pycassa
 from pycassa.pool import ConnectionPool
 from pycassa.columnfamily import ColumnFamily
+import datetime
 
 class Usuario:
-	def __init__(self, nickName, password, primerNombre, segundoNombre, primerApellido, segundoApellido, email, fechaNacimiento, paisOrigen, biografia, foto):
-		self.nickName = nickName
-                self.password = password
-		self.primerNombre = primerNombre
-                self.segundoNombre = segundoNombre
-                self.primerApellido = primerApellido
-                self.segundoApellido = segundoApellido
-		self.email = email                
-		self.fechaNacimiento = fechaNacimiento                
-                self.paisOrigen = paisOrigen
-                self.biografia = biografia
-                self.foto = foto 
-	
+	pass
 
 	def registrarse(self): 
 	    try:
@@ -56,6 +45,7 @@ class Usuario:
 	    else:
 		return "TRUE"
 
+
  	def validarSesion(self,nickName):
 	     try:
 	    	    pool = ConnectionPool('baseDeDatos')
@@ -69,4 +59,6 @@ class Usuario:
 		           return "FALSE"
              except Exception: 
 		return "FALSE"
+
+
 
