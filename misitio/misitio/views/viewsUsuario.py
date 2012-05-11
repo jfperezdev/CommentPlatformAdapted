@@ -98,6 +98,8 @@ def modificarUsuario(request):
 		biografia = i.text
 	elif i.tag == "foto":
 		foto = i.text
+	elif i.tag == "token":
+		token = i.text
     
     elUsuario = GestionUsuario.Usuario()
     elUsuario.nickName = nickName
@@ -111,15 +113,28 @@ def modificarUsuario(request):
     elUsuario.paisOrigen = paisOrigen
     elUsuario.biografia = biografia
     elUsuario.foto = foto
-    
-	
-    if elUsuario.modificarse() == "TRUE":	
-	    return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Se ha modificado satisfactoriamente el usuario "+elUsuario.nickName},
-	    mimetype='application/xml')
-    else:
-	    return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error al tratar de modificar al usuario "+elUsuario.nickName},
-	    mimetype='application/xml')
 
+
+
+    elToken = GestionToken.Token()
+    ip = str(request.META['REMOTE_ADDR']) 
+    elToken.token = token
+    elToken.nickName = nickName
+    elToken.ip = ip
+  
+    if elToken.validarToken() == "TRUE":
+    	if elUsuario.modificarse() == "TRUE":	
+       		return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Se ha modificado satisfactoriamente el usuario "+elUsuario.nickName},
+	    mimetype='application/xml')
+	else:
+       	        return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error al tratar de modificar al usuario "+elUsuario.nickName},
+	    mimetype='application/xml')
+    elif elToken.validarToken()=="Error":
+	 return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Lo sentimos el tiempo de su token ha expirado. Vuelva a Iniciar Sesion"},mimetype='application/xml')
+    else:
+	return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error el token enviado es incorrecto"},mimetype='application/xml')
+	
+   
 
 def generarIdToken():
 		vacio = True
@@ -169,26 +184,12 @@ def validarUsuarioIp(nickName, ip):
 
 				   nowToken2 = columns['fecha'].split(".")
 			    	   nowToken = datetime.datetime(*time.strptime(nowToken2[0],'%Y-%m-%d %H:%M:%S')[0:6])
-				   f=open("FECHATOKEN.txt","w")
-				   f.write(columns['fecha'])
-				   f.close()
 				   now = datetime.datetime.now()
 			    	   diferenciaToken = now - nowToken
-				   f=open("token.txt","w")
-				   f.write(str(diferenciaToken))
-				   f.close()
-				   horas = str(diferenciaToken).split(":")
-				   
-				   f=open("RESULTADO.txt","w")
-				   f.write(str(horas))
-				   f.close()
-				   
+				   horas = str(diferenciaToken).split(":")	   
 				   minutos = int(horas[1])
-				   f=open("RESULTADO3.txt","w")
-				   f.write(str (minutos))
-				   f.close()
 				   
-				   if (horas[0]=="0") and (minutos<=1):
+				   if (horas[0]=="0") and (minutos<=4):
 				   	return "FALSE"
 			
 		    return "TRUE"

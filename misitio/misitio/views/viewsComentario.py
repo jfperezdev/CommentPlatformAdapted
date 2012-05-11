@@ -44,7 +44,7 @@ def registrarComentario(request):
 	else:
        	        return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error al tratar de generar el Comentario el dia:" +elComentario.fecha},mimetype='application/xml')
     elif elToken.validarToken()=="Error":
-	 return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Lo sentimos su tiempo ha expirado"},mimetype='application/xml')
+	 return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Lo sentimos el tiempo de su token ha expirado. Vuelva a Iniciar Sesion"},mimetype='application/xml')
     else:
 	return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error el token enviado es incorrecto"},mimetype='application/xml')
 	
@@ -84,14 +84,25 @@ def responderComentario(request):
     resultado = col_fam.get(idComentario,columns=['nickName']) 
     usuario = resultado['nickName']
 
+    elToken = GestionToken.Token()
+    ip = str(request.META['REMOTE_ADDR']) 
+    elToken.token = token
+    elToken.nickName = nickName
+    elToken.ip = ip
+  
     if(usuario == usuarioRespuesta):
-	    if elComentario.responderComentario() == "TRUE":	
-	       return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Se ha agregado satisfactoriamente la respuesta el dia: "+elComentario.fecha},mimetype='application/xml')
-    	    else:
-	       return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error al tratar de generar la respuesta el dia:" +elComentario.fecha},mimetype='application/xml')
-
+	    if elToken.validarToken() == "TRUE":
+	    	if elComentario.responderComentario() == "TRUE":	
+	       	   return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Se ha agregado satisfactoriamente la respuesta el dia: "+elComentario.fecha},mimetype='application/xml')
+		else:
+	       	   return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error al tratar de generar la respuesta el dia:" +elComentario.fecha},mimetype='application/xml')
+	    elif elToken.validarToken()=="Error":
+		 return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Lo sentimos el tiempo de su token ha expirado. Vuelva a Iniciar Sesion"},mimetype='application/xml')
+	    else:
+		return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error el token enviado es incorrecto"},mimetype='application/xml')
     else:
-	    return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "La respuesta no esta asociada al comentario"},mimetype='application/xml')
+	  return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "La respuesta no esta asociada al comentario"},mimetype='application/xml')
+
 
 ############################################################
 #-------------------- Lista  Comentario--------------------#
