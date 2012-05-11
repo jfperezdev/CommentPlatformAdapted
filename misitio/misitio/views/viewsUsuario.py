@@ -45,17 +45,18 @@ def registrarUsuario(request):
 	elif i.tag == "foto":
 		foto = i.text
     
-    elUsuario = GestionUsuario.Usuario(nickName
-    ,password
-    ,primerNombre
-    ,segundoNombre
-    ,primerApellido
-    ,segundoApellido
-    ,email
-    ,fechaNacimiento
-    ,paisOrigen
-    ,biografia
-    ,foto) 
+    elUsuario = GestionUsuario.Usuario()
+    elUsuario.nickName = nickName
+    elUsuario.password = password
+    elUsuario.primerNombre = primerNombre
+    elUsuario.segundoNombre = segundoNombre
+    elUsuario.primerApellido = primerApellido
+    elUsuario.segundoApellido = segundoApellido
+    elUsuario.email = email
+    elUsuario.fechaNacimiento = fechaNacimiento
+    elUsuario.paisOrigen = paisOrigen
+    elUsuario.biografia = biografia
+    elUsuario.foto = foto 
     
 	
     if elUsuario.registrarse() == "TRUE":	

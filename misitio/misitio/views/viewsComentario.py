@@ -23,6 +23,8 @@ def registrarComentario(request):
 		adjunto = i.text
 	elif i.tag == "token":
 		token = i.text
+	elif i.tag == "admiteRespuesta":
+		admiteRespuesta = i.text
     now = datetime.datetime.now()
 
     elComentario = GestionComentario.Comentario()
@@ -30,6 +32,7 @@ def registrarComentario(request):
     elComentario.texto = texto
     elComentario.adjunto = adjunto
     elComentario.token = token
+    elComentario.admiteRespuesta = admiteRespuesta
     elComentario.fecha = str (now)
 
     elToken = GestionToken.Token()
@@ -48,6 +51,8 @@ def registrarComentario(request):
     else:
 	return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error el token enviado es incorrecto"},mimetype='application/xml')
 	
+
+
 
 ############################################################
 #----------------- Responder Comentario--------------------#
@@ -92,12 +97,16 @@ def responderComentario(request):
   
     if(usuario == usuarioRespuesta):
 	    if elToken.validarToken() == "TRUE":
-	    	if elComentario.responderComentario() == "TRUE":	
-	       	   return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Se ha agregado satisfactoriamente la respuesta el dia: "+elComentario.fecha},mimetype='application/xml')
-		else:
-	       	   return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error al tratar de generar la respuesta el dia:" +elComentario.fecha},mimetype='application/xml')
-	    elif elToken.validarToken()=="Error":
+			if  elComentario.admitirRespuesta(idComentario) == "TRUE":
+			    	if elComentario.responderComentario() == "TRUE":	
+			       	   return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Se ha agregado satisfactoriamente la respuesta el dia: "+elComentario.fecha},mimetype='application/xml')
+				else:
+			       	   return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error al tratar de generar la respuesta el dia:" +elComentario.fecha},mimetype='application/xml')
+			else:
+				 return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Este comentario no admite respuesta"},mimetype='application/xml')
+            elif elToken.validarToken() == "Error":
 		 return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Lo sentimos el tiempo de su token ha expirado. Vuelva a Iniciar Sesion"},mimetype='application/xml')
+            		
 	    else:
 		return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error el token enviado es incorrecto"},mimetype='application/xml')
     else:
@@ -160,5 +169,39 @@ def listarRespuesta(request,usuarioRespuesta):
  #  	   if not arreglo[i].find("#"):
 #		print arreglo[i]
 
-    		
+
+############################################################
+#-------------------- Me Gusta--------------------#
+def meGusta(request):
+
+    datosComentario =  request.raw_post_data
+    tree = xml.fromstring(datosComentario)  
+    for i in tree.iter(): 
+	if i.tag == "idComentario":
+	        idComentario = i.text
+	elif i.tag == "nickName":
+		nickName = i.text
+	elif i.tag == "token":
+		token = i.text
+
+    elComentario = GestionComentario.Comentario()
+    elComentario.nickName = nickName
+    elComentario.idComentario = idComentario
+
+    elToken = GestionToken.Token()
+    ip = str(request.META['REMOTE_ADDR']) 
+    elToken.token = token
+    elToken.nickName = nickName
+    elToken.ip = ip
+  
+    if elToken.validarToken() == "TRUE":
+    	if(elComentario.ponerMeGusta()=="TRUE"):
+		return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Se a Agregado un Megusta al comentario satisfactoriamente"},mimetype='application/xml')
+	else:
+		return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Nose puede colocar me gusta a este comentario"},mimetype='application/xml')
+    elif elToken.validarToken()=="Error":
+	 return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Lo sentimos el tiempo de su token ha expirado. Vuelva a Iniciar Sesion"},mimetype='application/xml')
+    else:
+	return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error el token enviado es incorrecto"},mimetype='application/xml')
+	
 
