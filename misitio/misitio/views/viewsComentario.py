@@ -41,10 +41,12 @@ def registrarComentario(request):
     if elToken.validarToken() == "TRUE":
     	if elComentario.registrarComentario() == "TRUE":	
        		return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Se ha agregado satisfactoriamente el Comentario el dia: "+elComentario.fecha},mimetype='application/xml')
-    	else:
-       		return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error al tratar de generar el Comentario el dia:" +elComentario.fecha},mimetype='application/xml')
+	else:
+       	        return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error al tratar de generar el Comentario el dia:" +elComentario.fecha},mimetype='application/xml')
+    elif elToken.validarToken()=="Error":
+	 return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Lo sentimos su tiempo ha expirado"},mimetype='application/xml')
     else:
-	return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error el token enviado es incorrecto:"},mimetype='application/xml')
+	return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error el token enviado es incorrecto"},mimetype='application/xml')
 	
 
 ############################################################
