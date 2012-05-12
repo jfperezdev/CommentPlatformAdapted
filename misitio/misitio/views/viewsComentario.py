@@ -98,7 +98,8 @@ def responderComentario(request):
     if(usuario == usuarioRespuesta):
 	    if elToken.validarToken() == "TRUE":
 			if  elComentario.admitirRespuesta(idComentario) == "TRUE":
-			    	if elComentario.responderComentario() == "TRUE":	
+			    	if elComentario.responderComentario() == "TRUE":
+				   elComentario.notificarRespuestaComentario(usuarioRespuesta)	
 			       	   return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Se ha agregado satisfactoriamente la respuesta el dia: "+elComentario.fecha},mimetype='application/xml')
 				else:
 			       	   return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error al tratar de generar la respuesta el dia:" +elComentario.fecha},mimetype='application/xml')

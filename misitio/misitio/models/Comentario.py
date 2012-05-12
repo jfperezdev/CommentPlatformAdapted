@@ -1,6 +1,7 @@
 import pycassa
 from pycassa.pool import ConnectionPool
 from pycassa.columnfamily import ColumnFamily
+import smtplib
 
 class Comentario:
 	pass
@@ -54,6 +55,41 @@ class Comentario:
 			     return "FALSE"
 		else:
 			return "TRUE"
+
+
+
+
+##########################################################################
+#-------------------- Notificar respuesta comentario --------------------#
+
+	def notificarRespuestaComentario(self,usuarioRespuesta):
+		try:
+
+			pool = ConnectionPool('baseDeDatos')
+			col_fam = pycassa.ColumnFamily(pool, 'Usuario')
+			resultado = col_fam.get(usuarioRespuesta,columns=['email']) 
+			emailDestinatario = resultado['email']
+		
+			De = "equipoafkdesarrollo"
+			texto = "La Plataforma de intercambio de mensajes PlataformCommentAdapted le informa que ud ha recibido una respuesta a un 					 comentario\n----------------------------------------------------------------------------------------------------------------\nPara mayor informacion inicie sesion con su cuenta y mantengase siempre comunicado(a) \n\n 								                    Atentamente:\n Equipo de PlataformCommentAdapted"
+			
+			server = smtplib.SMTP("smtp.gmail.com:587")
+			server.starttls()
+			server.login("equipoafkdesarrollo", "kristian1234")
+			server.sendmail(De, emailDestinatario, texto)
+			server.quit()
+
+		except Exception:
+			     return "FALSE"
+		else:
+			return "TRUE"
+
+
+
+
+
+
+
 ############################################################
 #----------------- registrar me Gusta--------------------#
 
@@ -121,6 +157,11 @@ def listaComentario(nickName):
 		return listaDeComentarios
 	else:
 	        return "FALSE"
+
+
+
+
+
 ############################################################
 #-------------------- Lista  Respuesta --------------------#
 	def listaRespuesta(usuarioRespuesta):
@@ -160,8 +201,6 @@ def generarIdGusta():
 				cont = cont+1
 				vacio = False
 
-			
-
 		except Exception:
 		     return "FALSE"
 		else:
@@ -170,4 +209,9 @@ def generarIdGusta():
 		     else:
 		        nuevoId = unicode(cont+1)
 		        return nuevoId
+
+
+
+
+
 
