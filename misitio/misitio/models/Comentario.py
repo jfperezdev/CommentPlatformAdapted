@@ -17,17 +17,18 @@ class Comentario:
 		    	self.idComentario = elId 
 		    	col_fam.insert (self.idComentario, {'nickName': self.nickName,'texto': self.texto ,'adjunto': self.adjunto, 'admiteRespuesta': self.admiteRespuesta, 'fecha': self.fecha, 'token': self.token})
 			#agregar Etiqueta		        
-			pool = ConnectionPool('baseDeDatos')
-			col_fam = pycassa.ColumnFamily(pool,'Etiqueta')
-			arreglo = etiquetas.split(',')
-			i = 0
-			while i < len(arreglo):
-			  idEtiqueta = generarIdEtiqueta()
-			  if idEtiqueta != "FALSE":
-			       idEtiqueta = str(idEtiqueta)
-			       nombreEtiqueta = arreglo[i] 
-			       col_fam.insert (idEtiqueta, {'nombreEtiqueta': nombreEtiqueta,'idComentario': self.idComentario,'nickName': self.nickName})
-			       i = i + 1
+		        if (etiquetas != " "):
+				pool = ConnectionPool('baseDeDatos')
+				col_fam = pycassa.ColumnFamily(pool,'Etiqueta')
+				arreglo = etiquetas.split(',')
+				i = 0
+				while i < len(arreglo):
+				  idEtiqueta = generarIdEtiqueta()
+				  if idEtiqueta != "FALSE":
+				       idEtiqueta = str(idEtiqueta)
+				       nombreEtiqueta = arreglo[i] 
+				       col_fam.insert (idEtiqueta, {'nombreEtiqueta': nombreEtiqueta,'idComentario': self.idComentario,'nickName': self.nickName})
+				       i = i + 1
 		    else:
 			return "FALSE"
 		except Exception:
@@ -100,10 +101,31 @@ class Comentario:
 
 
 
+###############################################################
+#-------------------- Eliminar Comentario --------------------#
+	def eliminarComentario(self,idComentario):
+		try:	
+			pool = ConnectionPool('baseDeDatos')
+			col_fam = pycassa.ColumnFamily(pool, 'Comentario')
+			try:
+				resultado = col_fam.get(idComentario,columns=['nickName'])
+			except Exception:
+			            return "ERROR"
+		        nickName = resultado ['nickName']
+			if (self.nickName == nickName): 
+				col_fam.remove(str(idComentario))
+			else:
+				return 'Error'
+		except Exception:
+			     return "FALSE"
+		else:
+		     return "TRUE"
+
+
 
 
 ############################################################
-#----------------- registrar me Gusta--------------------#
+#----------------- registrar me Gusta----------------------#
 
 	def ponerMeGusta(self):
 		try:
@@ -174,24 +196,21 @@ def listaComentario(nickName):
 
 ############################################################
 #-------------------- Lista  Respuesta --------------------#
-	def listaRespuesta(usuarioRespuesta):
+def listaRespuesta(usuarioRespuesta,idComentario):
 	
-		pool = ConnectionPool('baseDeDatos')
-		col_fam = pycassa.ColumnFamily(pool, 'Comentario')
-		resultado = col_fam.get_range(column_start='adjunto', column_finish='usuarioRespuesta')
-		encontrado = False
-		listaDeComentarios = []
-		for key,columns in resultado:
-			if len(columns)>5 and columns['usuarioRespuesta'] == usuarioRespuesta:
-				listaDeComentarios.append(columns['usuarioRespuesta']+":"+columns['nickName']+":"+columns['texto']+":"+columns['token']+":"+columns['adjunto'])
+	pool = ConnectionPool('baseDeDatos')
+	col_fam = pycassa.ColumnFamily(pool, 'Comentario')
+	resultado = col_fam.get_range(column_start='adjunto', column_finish='usuarioRespuesta')
+	encontrado = False
+	listaDeComentarios = []
+	for key,columns in resultado:
+		if len(columns)>6 and columns['usuarioRespuesta'] == usuarioRespuesta and columns['idComentario'] == idComentario:
+			listaDeComentarios.append(columns['usuarioRespuesta']+":"+columns['nickName']+":"+columns['texto'])
 			encontrado = True
-
-		if(encontrado):
-			return listaDeComentarios
-		else:
-			return "FALSE"
-
-
+	if(encontrado):
+		return listaDeComentarios
+	else:
+		return "FALSE"
 
 
 ############################################################
@@ -220,6 +239,9 @@ def generarIdGusta():
 		        nuevoId = str(lista[0])
 		        return nuevoId
 
+############################################################
+#----------------- Generar Id de Etiqueta------------------#
+
 def generarIdEtiqueta():
 		vacio = True
 		try:
@@ -242,6 +264,46 @@ def generarIdEtiqueta():
 		     else:
 		        nuevoId = str(listaIdEtiqueta[0])
 		        return nuevoId
+
+
+############################################################
+#----------------- Lista Etiqueta--------------------------#
+
+def listaEtiquetas(nombreEtiqueta):
+	
+	pool = ConnectionPool('baseDeDatos')
+	col_fam = pycassa.ColumnFamily(pool, 'Etiqueta')
+	resultado = col_fam.get_range(column_start='idComentario', column_finish='nombreEtiqueta')
+	encontrado = False
+	listaDeDatos = []
+	for key,columns in resultado:
+		if columns['nombreEtiqueta'] == nombreEtiqueta:
+			listaDeDatos.append(columns['idComentario']+":"+columns['nickName'])
+			encontrado = True
+
+	if(encontrado):
+		return listaDeDatos
+	else:
+		return "FALSE"
+
+
+############################################################
+#------------ Lista comentarios con etiquetas--------------#
+
+def listarComentariosConEtiqueta(idComentario,nickName):
+	try:    
+		listaDeComentarios = ' '
+		pool = ConnectionPool('baseDeDatos')
+		col_fam = pycassa.ColumnFamily(pool, 'Comentario')
+		resultado = col_fam.get(idComentario,columns=['nickName','texto'])
+		listaDeComentarios = resultado['texto']+":"
+	except Exception: 
+		return " "
+	else:
+		return listaDeComentarios
+
+
+
 
 
 

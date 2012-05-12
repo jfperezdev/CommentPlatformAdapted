@@ -9,7 +9,11 @@ class Usuario:
 	def registrarse(self): 
 	    try:
 		    pool = ConnectionPool('baseDeDatos')
-	    	    col_fam = pycassa.ColumnFamily(pool, 'Usuario')	
+	    	    col_fam = pycassa.ColumnFamily(pool, 'Usuario')
+		    resultado = col_fam.get_range(column_start='biografia', column_finish='segundoNombre')
+		    for key,columns in resultado:
+			if(key == self.nickName):
+			   return 'Error'
 		    col_fam.insert (self.nickName, {'password': self.password
 		    ,'primerNombre': self.primerNombre
 		    ,'segundoNombre': self.segundoNombre

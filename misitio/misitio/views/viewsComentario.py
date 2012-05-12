@@ -144,12 +144,20 @@ def listarComentario(request,nickName):
 
 ############################################################
 #-------------------- Listar  Respuesta--------------------#
-def listarRespuesta(request,usuarioRespuesta):
+def listarRespuesta(request):
 
-    nickName = str (nickName)
+    datosRespuesta =  request.raw_post_data
+    tree = xml.fromstring(datosRespuesta)
+  
+    for i in tree.iter(): 
+	if i.tag == "nickName":
+	        nickName = i.text
+	elif i.tag == "idComentario":
+		idComentario = i.text
+
     laRespuesta = GestionComentario.Comentario()
-    listaDeRespuestas = GestionComentario.listaRespuesta(usuarioRespuesta)
-    if  listaDeComentarios == "FALSE":	
+    listaDeRespuestas = GestionComentario.listaRespuesta(nickName,idComentario)
+    if  listaDeRespuestas == "FALSE":	
 	   return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error no se encuentran respuestas para esta persona"},mimetype='application/xml')
     else:
 	  datos = "<listaRespuesta>"
@@ -158,23 +166,12 @@ def listarRespuesta(request,usuarioRespuesta):
 	    	valores = listaDeRespuestas[i].split(':')
 		usuario = "\n     <nickName>"+valores[0]+"</nickName>"		
 		usuarioResp = "\n     <usuarioRespuesta>"+valores[1]+"</usuarioRespuesta>"
-		texto = "<\n     texto>"+valores[2]+"</texto>"
-		token = "<\n     token>"+valores[3]+"</token>"
-		adjunto = "\n     <adjunto>"+valores[4]+"</adjunto>\n"
-		datos = datos + usuario + usuarioResp + texto + token + adjunto
+		texto = "\n     <texto>"+valores[2]+"</texto>\n"
+
+		datos = datos + usuario + usuarioResp + texto
 		i = i + 1
 	  datos = datos + "\n<listaRespuesta>"
 	  return HttpResponse(datos, content_type= "application/xml")
-
-#def varlidarHashTag(request):
-#	
-#	comentario = comentario + ' '
-#	arreglo = comentario.split(' ')
-#	i = 0
-#	while (i < len(arreglo) - 1):
- #  	   if not arreglo[i].find("#"):
-#		print arreglo[i]
-
 
 ############################################################
 #-------------------- Me Gusta--------------------#
@@ -209,5 +206,75 @@ def meGusta(request):
 	 return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Lo sentimos el tiempo de su token ha expirado. Vuelva a Iniciar Sesion"},mimetype='application/xml')
     else:
 	return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error el token enviado es incorrecto"},mimetype='application/xml')
+
+
+
+################################################################
+#--------------------- Eliminar Comentarios--------------------#
+def eliminarComentarios(request):
+
+    datosComentario =  request.raw_post_data
+    tree = xml.fromstring(datosComentario)  
+    for i in tree.iter(): 
+	if i.tag == "nickName":
+	        nickName = i.text
+	elif i.tag == "idComentario":
+		idComentario = i.text
+	elif i.tag == "token":
+		token = i.text
 	
+    elComentario = GestionComentario.Comentario()
+    elComentario.nickName = nickName
+    elComentario.idComentario = idComentario
+
+    elToken = GestionToken.Token()
+    ip = str(request.META['REMOTE_ADDR']) 
+    elToken.token = token
+    elToken.nickName = nickName
+    elToken.ip = ip
+  
+    if elToken.validarToken() == "TRUE":
+    	if(elComentario.eliminarComentario(idComentario)=="TRUE"):
+		return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Se ha eliminado el comentario satisfactoriamente"},mimetype='application/xml')
+	elif (elComentario.eliminarComentario(idComentario)=="Error"):
+		return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Ud no es un usuario autorizado para eliminar este comentario"},mimetype='application/xml')
+	else:
+		return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error el comentario a eliminar no existe"},mimetype='application/xml')
+    elif elToken.validarToken()=="Error":
+	 return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Lo sentimos el tiempo de su token ha expirado. Vuelva a Iniciar Sesion"},mimetype='application/xml')
+    else:
+	return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error el token enviado es incorrecto"},mimetype='application/xml')
+
+
+
+################################################################
+#--------------------- Listar Etiqueta-------------------------#
+
+def listarEtiqueta(request,nombreEtiqueta):
+    listaDeDatosComentario = GestionComentario.listaEtiquetas(nombreEtiqueta)
+    if  listaDeDatosComentario == "FALSE":
+	return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error no se encuentran comentarios con esta etiqueta"},mimetype='application/xml')
+    else:
+	  datos = "<listaComentariosConEtiquetas>\n"
+    	  i = 0
+	  losComentarios = ''
+	  resultado = ''
+          while i < len(listaDeDatosComentario):
+	    	valores = listaDeDatosComentario[i].split(':')
+		idComentario = valores[0]		
+		nickName = valores[1]
+		losComentarios = losComentarios + GestionComentario.listarComentariosConEtiqueta(idComentario,nickName) 
+		i = i + 1
+	  i = 0
+	  arreglo = losComentarios.split(":")
+	  while i < len(arreglo)-1:
+		resultado = resultado + "<texto>" + arreglo[i] + "<texto>\n"
+		i = i + 1
+
+	  datos = datos + resultado + "</listaComentariosConEtiquetas>"
+	  return HttpResponse(datos, content_type= "application/xml")
+
+
+
+
 

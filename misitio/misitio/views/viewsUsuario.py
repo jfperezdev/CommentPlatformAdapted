@@ -62,6 +62,10 @@ def registrarUsuario(request):
     if elUsuario.registrarse() == "TRUE":	
 	    return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Se ha agregado satisfactoriamente el usuario "+elUsuario.nickName},
 	    mimetype='application/xml')
+    elif elUsuario.registrarse() == "Error":
+	    return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "El usuario "+elUsuario.nickName+" ya se encuentra registrado"},
+	    mimetype='application/xml')
+
     else:
 	    return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error al tratar de registrar al usuario "+elUsuario.nickName},
 	    mimetype='application/xml')
