@@ -139,7 +139,7 @@ def modificarUsuario(request):
 
 def generarIdToken():
 		vacio = True
-		cont = 0
+
 		try:
 			pool = ConnectionPool('baseDeDatos')
 			col_fam = pycassa.ColumnFamily(pool,'Token')
@@ -147,10 +147,9 @@ def generarIdToken():
 			arreglo = []
 
 			for key,columns in resultado:
-				arreglo.append(key)
-				cont = cont+1
+				arreglo.append(int(key)+1)
 				vacio = False
-
+			lista = sorted(arreglo,reverse=True)
 			
 
 		except Exception:
@@ -159,7 +158,7 @@ def generarIdToken():
 		     if vacio == True:
 			return '1'
 		     else:
-		        nuevoId = unicode(cont+1)
+		        nuevoId = str(lista[0])
 		        return nuevoId
 
 

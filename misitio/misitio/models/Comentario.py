@@ -6,7 +6,9 @@ import smtplib
 class Comentario:
 	pass
 
-	def registrarComentario (self):
+
+
+	def registrarComentario (self,etiquetas):
 		try:
 		    pool = ConnectionPool('baseDeDatos')
 		    col_fam = pycassa.ColumnFamily(pool,'Comentario')
@@ -14,6 +16,18 @@ class Comentario:
 		    if(elId != "FALSE"):
 		    	self.idComentario = elId 
 		    	col_fam.insert (self.idComentario, {'nickName': self.nickName,'texto': self.texto ,'adjunto': self.adjunto, 'admiteRespuesta': self.admiteRespuesta, 'fecha': self.fecha, 'token': self.token})
+			#agregar Etiqueta		        
+			pool = ConnectionPool('baseDeDatos')
+			col_fam = pycassa.ColumnFamily(pool,'Etiqueta')
+			arreglo = etiquetas.split(',')
+			i = 0
+			while i < len(arreglo):
+			  idEtiqueta = generarIdEtiqueta()
+			  if idEtiqueta != "FALSE":
+			       idEtiqueta = str(idEtiqueta)
+			       nombreEtiqueta = arreglo[i] 
+			       col_fam.insert (idEtiqueta, {'nombreEtiqueta': nombreEtiqueta,'idComentario': self.idComentario,'nickName': self.nickName})
+			       i = i + 1
 		    else:
 			return "FALSE"
 		except Exception:
@@ -88,8 +102,6 @@ class Comentario:
 
 
 
-
-
 ############################################################
 #----------------- registrar me Gusta--------------------#
 
@@ -117,7 +129,6 @@ class Comentario:
 
 def generarIdComentario():
 		vacio = True
-		cont = 0
 		try:
 			pool = ConnectionPool('baseDeDatos')
 			col_fam = pycassa.ColumnFamily(pool,'Comentario')
@@ -125,11 +136,10 @@ def generarIdComentario():
 			arreglo = []
 
 			for key,columns in resultado:
-				arreglo.append(key)
-				cont = cont+1
+				arreglo.append(int(key)+1)
 				vacio = False
 
-			
+			lista = sorted(arreglo,reverse=True)
 
 		except Exception:
 		     return "FALSE"
@@ -137,7 +147,7 @@ def generarIdComentario():
 		     if vacio == True:
 			return '1'
 		     else:
-		        nuevoId = unicode(cont+1)
+		        nuevoId = str(lista[0])
 		        return nuevoId
 
 ############################################################
@@ -189,7 +199,6 @@ def listaComentario(nickName):
 
 def generarIdGusta():
 		vacio = True
-		cont = 0
 		try:
 			pool = ConnectionPool('baseDeDatos')
 			col_fam = pycassa.ColumnFamily(pool,'Gusto')
@@ -197,9 +206,10 @@ def generarIdGusta():
 			arreglo = []
 
 			for key,columns in resultado:
-				arreglo.append(key)
-				cont = cont+1
+				arreglo.append(int(key)+1)
 				vacio = False
+
+			lista = sorted(arreglo,reverse=True)
 
 		except Exception:
 		     return "FALSE"
@@ -207,10 +217,31 @@ def generarIdGusta():
 		     if vacio == True:
 			return '1'
 		     else:
-		        nuevoId = unicode(cont+1)
+		        nuevoId = str(lista[0])
 		        return nuevoId
 
+def generarIdEtiqueta():
+		vacio = True
+		try:
+			pool = ConnectionPool('baseDeDatos')
+			col_fam = pycassa.ColumnFamily(pool,'Etiqueta')
+			resultado = col_fam.get_range(column_start='idComentario', column_finish='nickName')
+			arreglo = []
 
+			for key,columns in resultado:
+				arreglo.append(int(key)+1)
+				vacio = False
+
+			listaIdEtiqueta = sorted(arreglo,reverse=True)
+
+		except Exception:
+		     return "FALSE"
+		else:
+		     if vacio == True:
+			return '1'
+		     else:
+		        nuevoId = str(listaIdEtiqueta[0])
+		        return nuevoId
 
 
 
