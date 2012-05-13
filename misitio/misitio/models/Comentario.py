@@ -126,25 +126,70 @@ class Comentario:
 
 ############################################################
 #----------------- registrar me Gusta----------------------#
-
-	def ponerMeGusta(self):
+  	def ponerMeGusta(self):
 		try:
-			pool = ConnectionPool('baseDeDatos')
-		    	col_fam = pycassa.ColumnFamily(pool,'Gusto')
-		   	resultado = col_fam.get_range(column_start='idComentario', column_finish='nickName')
-			for key,columns in resultado:
-			       if(columns['nickName'] == nickName and columns['idComentario'] == idComentario):
-					return 'FALSE'
-			
-			if(elId != "FALSE"):
-			       elId = generarIdGusta()
-		    	       self.idRespuesta = elId 
-			       col_fam.insert (self.idRespuesta, {'idComentario': self.idComentario,'nickName': self.nickName})
-			       
+		    pool = ConnectionPool('baseDeDatos')
+		    col_fam = pycassa.ColumnFamily(pool, 'Gusto')
+		    resultado = col_fam.get_range(column_start='gusto', column_finish='nickName')
+		    for key,columns in resultado:
+		           if(columns['nickName'] == self.nickName and columns['idComentario'] == self.idComentario):
+		            if(columns['gusto']=='TRUE'):
+		                return 'FALSE'
+		            elif(columns['gusto']=='FALSE'):
+		                col_fam.insert (key, {'idComentario': self.idComentario,'nickName': self.nickName,'gusto':'TRUE'})
+		                return'CAMBIO'
+		   
+		    elId = generarIdGusta()
+		    if(elId != "FALSE"):
+		           self.idRespuesta = elId
+		           col_fam.insert (self.idRespuesta, {'idComentario': self.idComentario,'nickName': self.nickName,'gusto':'TRUE'})
+		           return 'TRUE'
+		          
 		except Exception:
 		     return "FALSE"
 		else:
 		     return "TRUE"
+
+
+###############################################################
+#----------------- registrar no me Gusta----------------------#
+
+        def ponerNoMeGusta(self):
+		try:
+		    pool = ConnectionPool('baseDeDatos')
+		    col_fam = pycassa.ColumnFamily(pool, 'Gusto')
+		    resultado = col_fam.get_range(column_start='gusto', column_finish='nickName')
+		    for key,columns in resultado:
+		           if(columns['nickName'] == self.nickName and columns['idComentario'] == self.idComentario):
+		            if(columns['gusto']=='FALSE'):
+		                return 'FALSE'
+		            elif(columns['gusto']=='TRUE'):
+		                col_fam.insert (key, {'idComentario': self.idComentario,'nickName': self.nickName,'gusto':'FALSE'})
+		                return'CAMBIO'
+		   
+		    elId = generarIdGusta()
+		    if(elId != "FALSE"):
+		           self.idRespuesta = elId
+		           col_fam.insert (self.idRespuesta, {'idComentario': self.idComentario,'nickName': self.nickName,'gusto':'FALSE'})
+		           return 'TRUE'
+		          
+		except Exception:
+		     return "FALSE"
+		else:
+		     return "TRUE"
+
+
+############################################################
+#----------------- validar Comentario----------------------#
+	def ValidarComentario(self,idComentario):
+		try:
+			pool = ConnectionPool('baseDeDatos')
+			col_fam = pycassa.ColumnFamily(pool, 'Comentario')
+			resultado = col_fam.get(idComentario,columns=['nickName'])
+			return 'TRUE'
+		except Exception:
+			return "FALSE"
+
 
 ############################################################
 #----------------- GenerarId Comentario--------------------#
@@ -301,6 +346,43 @@ def listarComentariosConEtiqueta(idComentario,nickName):
 		return " "
 	else:
 		return listaDeComentarios
+
+############################################################
+#-----------------------Contar me gusta--------------------#
+def contarMeGusta(idComentario):
+	try:	
+		meGustan = 0
+		pool = ConnectionPool('baseDeDatos')
+		col_fam = pycassa.ColumnFamily(pool,'Gusto')
+		resultado = col_fam.get_range(column_start='gusto', column_finish='nickName')
+		for key,columns in resultado:
+			   if(columns['idComentario'] == idComentario and columns['gusto'] == "TRUE" ):
+				meGustan = meGustan + 1		  
+		
+	except Exception: 
+		return "FALSE"
+	else:
+		return meGustan
+
+
+
+############################################################
+#--------------------Contar no me gusta--------------------#
+def contarNoMeGusta(idComentario):
+	try:	
+		
+		noMeGustan = 0
+		pool = ConnectionPool('baseDeDatos')
+		col_fam = pycassa.ColumnFamily(pool,'Gusto')
+		resultado = col_fam.get_range(column_start='gusto', column_finish='nickName')
+		for key,columns in resultado:
+			   if(columns['idComentario'] == idComentario and columns['gusto'] == "FALSE" ):
+				noMeGustan = noMeGustan + 1
+	except Exception: 
+		return "FALSE"
+	else:
+		return noMeGustan
+
 
 
 

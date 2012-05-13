@@ -49,6 +49,21 @@ class Usuario:
 	    else:
 		return "TRUE"
 
+	
+	
+	def eliminarUsuario(self):
+	
+		try:	
+			pool = ConnectionPool('baseDeDatos')
+			col_fam = pycassa.ColumnFamily(pool, 'Usuario')
+			col_fam.remove(self.nickName)
+		
+		except Exception:
+			     return "FALSE"
+		else:
+		     return "TRUE"
+
+
 
  	def validarSesion(self,nickName):
 	     try:

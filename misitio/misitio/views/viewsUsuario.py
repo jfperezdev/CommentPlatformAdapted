@@ -225,9 +225,6 @@ def iniciarSesion(request):
     elUsuario.password = password
 
     respuesta = elUsuario.validarSesion(nickName)
-
-#   elToken = GestionToken.Token()
- #  resp = elToken.validarUsuarioIp(nickName,ip)
     resp = validarUsuarioIp(nickName,ip)
     	
     if (respuesta == "TRUE"):
@@ -245,6 +242,43 @@ def iniciarSesion(request):
     else:
 		return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error, verifique su nickName y password"},
 	mimetype='application/xml')
+
+
+def eliminarUsuario(request):
+    datosEliminarUsuario = request.raw_post_data
+    tree = xml.fromstring(datosEliminarUsuario)
+    ip = str(request.META['REMOTE_ADDR'])
+    for i in tree.iter(): 
+	if i.tag == "nickName":
+	        nickName = i.text
+	elif i.tag == "password":
+		password = i.text
+	elif i.tag == "token":
+		token = i.text
+	
+    elUsuario = GestionUsuario.Usuario()
+    elUsuario.nickName = nickName
+    elUsuario.password = password
+
+    respuesta = elUsuario.validarSesion(nickName)
+    
+    elToken = GestionToken.Token()
+    ip = str(request.META['REMOTE_ADDR']) 
+    elToken.token = token
+    elToken.nickName = nickName
+    elToken.ip = ip
+    	
+    if (respuesta == "TRUE"):
+    	    if elToken.validarToken() == "TRUE":
+	    	if elUsuario.eliminarUsuario() == "TRUE":
+	       		return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Se ha eliminado su cuenta satisfactoriamente"}, mimetype='application/xml')
+	        else:
+	 	       return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error, verifique su nickname y password"}, mimetype='application/xml')
+	    else:
+		 return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error el token enviado es incorrecto"},mimetype='application/xml')
+    else:
+         return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error, verifique su nickName y password"},mimetype='application/xml')
+
 
 	    	
 
