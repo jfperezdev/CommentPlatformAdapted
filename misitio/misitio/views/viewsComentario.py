@@ -132,11 +132,12 @@ def listarComentario(request,nickName):
     	  i = 0
           while i < len(listaDeComentarios):
 	    	valores = listaDeComentarios[i].split(':')
-		usuario = "\n     <nickName>"+valores[0]+"</nickName>"
-		texto = "\n     <texto>"+valores[1]+"</texto>"
-		token = "\n     <token>"+valores[2]+"</token>"
-		adjunto = "\n     <adjunto>"+valores[3]+"</adjunto>\n"
-		datos = datos + usuario + texto + token + adjunto
+		identificador = "\n     <idComentario>"+valores[0]+"</idComentario>"
+		usuario = "\n     <nickName>"+valores[1]+"</nickName>"
+		texto = "\n     <texto>"+valores[2]+"</texto>"
+		token = "\n     <token>"+valores[3]+"</token>"
+		adjunto = "\n     <adjunto>"+valores[4]+"</adjunto>\n"
+		datos = datos + identificador + usuario + texto + token + adjunto
 		i = i + 1
 	  datos = datos + "\n<listaComentario>"
 	  	        

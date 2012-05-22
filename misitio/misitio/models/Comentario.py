@@ -227,7 +227,7 @@ def listaComentario(nickName):
 	listaDeComentarios = []
 	for key,columns in resultado:
 		if columns['nickName'] == nickName:
-			listaDeComentarios.append(columns['nickName']+":"+columns['texto']+":"+columns['token']+":"+columns['adjunto'])
+			listaDeComentarios.append(key+":"+columns['nickName']+":"+columns['texto']+":"+columns['token']+":"+columns['adjunto'])
 		encontrado = True
 
 	if(encontrado):
