@@ -299,8 +299,16 @@ def eliminarComentarios(request):
     else:
 	return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error el token enviado es incorrecto"},mimetype='application/xml')
 
-################################################################
-#--------------------- Listar Etiqueta-------------------------#
+############################################################
+#----------------- Listar Etiqueta ------------------------#
+#	Procedimiento que se encarga de listar		   #
+#	los datos de comentarios que contengan		   #
+#	la etiqueta solicitada via URL en el request	   #
+#	que se comunica a la vista y esta llama 	   #
+#	a dicha rutina para que retorne los datos buscados #
+#	para luego buscar el comentario y mostrar sus      #
+#	datos con un HttpResponse en formato xml	   #  
+############################################################
 
 def listarEtiqueta(request,nombreEtiqueta):
     listaDeDatosComentario = GestionComentario.listaEtiquetas(nombreEtiqueta)
@@ -326,8 +334,12 @@ def listarEtiqueta(request,nombreEtiqueta):
 	datos = datos + resultado + "</listaComentariosConEtiquetas>"
 	return HttpResponse(datos, content_type= "application/xml")
 
-################################################################
-#---------------------Cuenta me gusta--------------------------#
+############################################################
+#-----------------------Cuenta me gusta--------------------#
+#	Procedimiento que retorna un entero con el 	   #
+#	contador de registros que indican que le gusta	   #
+#	un comentario a un usuario			   #
+############################################################
 
 def cuentaMeGusta(request):
 
@@ -344,8 +356,12 @@ def cuentaMeGusta(request):
 	return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "A "+ str(contador) + " Personas le(s) gusta este comentario "},mimetype='application/xml')
 
 
-################################################################
-#---------------------Cuenta no me gusta-----------------------#
+############################################################
+#--------------------Cuenta no me gusta--------------------#
+#	Procedimiento que retorna un entero con el 	   #
+#	contador de registros que indican que no le gusta  #
+#	un comentario a un usuario			   #
+############################################################
 def cuentaNoMeGusta(request):
 
     datosComentario = request.raw_post_data

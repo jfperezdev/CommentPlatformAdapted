@@ -19,6 +19,12 @@ import datetime
 class Usuario:
     pass
 
+############################################################
+#--------------------- registrarse ------------------------#
+#	Procedimiento que permite registrar a un	   #
+#	usuario en la base de datos ingresando todos	   #
+#	los datos Pertinentes				   #
+############################################################
     def registrarse(self): 
         try:
             pool = ConnectionPool('baseDeDatos')
@@ -42,6 +48,12 @@ class Usuario:
 	else:
 	    return "TRUE"
 
+############################################################
+#--------------------- modificarse ------------------------#
+#	Procedimiento que permite modificar a un	   #
+#	usuario en la base de datos ingresando todos	   #
+#	los datos Pertinentes				   #
+############################################################
     def modificarse(self):    
         try:
 	    pool = ConnectionPool('baseDeDatos')
@@ -61,6 +73,13 @@ class Usuario:
 	else:
             return "TRUE"
 
+############################################################
+#------------------ Eliminar Usuario ----------------------#
+#	Procedimiento que permite eliminar a un usuario    #
+#	cuyo nickName, password y token sean validos.      #
+#	Una vez confirmada la operacion el usuario es      #
+#	borrado automaticamente de la BD		   #
+############################################################
     def eliminarUsuario(self):
 	try:	
             pool = ConnectionPool('baseDeDatos')
@@ -72,6 +91,12 @@ class Usuario:
 	else:
 	    return "TRUE"
 
+############################################################
+#------------------- Validar Usuario ----------------------#
+#	Procedimiento que verifica si un usuario esta	   #
+#	o no registrado en la base de datos y los datos    #
+#	de ingreso son los correctos.			   #
+############################################################
     def validarSesion(self,nickName):
         try:
 	    pool = ConnectionPool('baseDeDatos')

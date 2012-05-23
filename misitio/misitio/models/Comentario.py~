@@ -1,4 +1,4 @@
-#********************************************************************************************
+#*********************************************************************************************
 #                      Archivo: Comentario.py
 #                      -------------------
 #   copyright            : (C) 2012 by Developer Group: Jose Francisco
@@ -9,7 +9,7 @@
 # PlatformCommentAdapter. Proyecto de Desarrollo del Software
 # ********************************************************************************************
 # Descripcion : Archivo que contiene la Clase Comentario
-# *********************************************************************************************
+# ********************************************************************************************
 
 import pycassa
 from pycassa.pool import ConnectionPool
@@ -46,7 +46,13 @@ class Comentario:
             return "FALSE"
         else:
             return "TRUE"
-	
+
+############################################################
+#--------------- Responder Comentario ---------------------#
+#	Procedimiento que se encarga de responder	   #
+#	un comentario o una respuesta a un comentario	   #
+#	e ingresar dicha respuesta en persistencia         #
+############################################################
     def responderComentario(self):
         try:
 	    pool = ConnectionPool('baseDeDatos')
@@ -67,7 +73,10 @@ class Comentario:
 	    return "TRUE"
 
 ############################################################
-#-------------------- Admite Respuesta --------------------#
+#------------------ Admite Respuesta  ---------------------#
+#	Procedimiento que verifica si un comentario	   #
+#	admite respuesta				   #
+############################################################
     def admitirRespuesta(self,idComentario):
 	try:	
 	    pool = ConnectionPool('baseDeDatos')
@@ -83,8 +92,14 @@ class Comentario:
 	else:
 	    return "TRUE"
 
-##########################################################################
-#-------------------- Notificar respuesta comentario --------------------#
+############################################################
+#----------- Notificar respuesta comentario ---------------#
+#	Procedimiento que notifica al usuario              #
+#	creador del comentario que se ha respondido	   #
+#	el mismo a traves de un correco electronico	   #
+#       mediante el protocolo smtp de Google               #
+#	smpt.gmail.com a traves del puerto 587             #
+############################################################
     def notificarRespuestaComentario(self,usuarioRespuesta):
         try:
 	    pool = ConnectionPool('baseDeDatos')
@@ -105,8 +120,12 @@ class Comentario:
 	else:
              return "TRUE"
 
-###############################################################
-#-------------------- Eliminar Comentario --------------------#
+############################################################
+#----------------- Eliminar Comentario --------------------#
+#	Procedimiento que permite eliminar un comentario   #
+#	validando que unicamente el creador del mismo	   #
+#	es quien esta ejecutando dicha operacion	   #
+############################################################
     def eliminarComentario(self,idComentario):
         try:	
 	    pool = ConnectionPool('baseDeDatos')
@@ -126,7 +145,11 @@ class Comentario:
 	    return "TRUE"
 
 ############################################################
-#----------------- registrar me Gusta----------------------#
+#--------------------- poner me Gusta----------------------#
+#	Inserta en la base de datos un registro	           #
+#	que indica que a una persona le gusta un	   #
+#	comentario.					   #
+############################################################
     def ponerMeGusta(self):
         try:
 	    pool = ConnectionPool('baseDeDatos')
@@ -151,8 +174,12 @@ class Comentario:
 	else:
 	    return "TRUE"
 
-###############################################################
-#----------------- registrar no me Gusta----------------------#
+############################################################
+#------------------ poner No me Gusta----------------------#
+#	Inserta en la base de datos un registro	           #
+#	que indica que a una persona no le gusta un	   #
+#	comentario.					   #
+############################################################
     def ponerNoMeGusta(self):
         try:
 	    pool = ConnectionPool('baseDeDatos')
@@ -179,6 +206,9 @@ class Comentario:
 
 ############################################################
 #----------------- validar Comentario----------------------#
+#    Procedimiento que valida si el idComentario	   #
+#    existe en la bd y por ende el comentario solicitado   #
+############################################################
     def ValidarComentario(self,idComentario):
         try:
 	    pool = ConnectionPool('baseDeDatos')
@@ -190,6 +220,13 @@ class Comentario:
 
 ############################################################
 #-------------------- Lista  Comentario--------------------#
+#	Se encarga de listar todos los comentarios	   #
+#	mas no las respuestas, de un usuario en espe-	   #
+#	cifico. Este procedimiento, si la respuesta es     #
+#	satisfactoria, retorna todos los datos de los      #
+#       comentarios asociados al nickName dado.		   #
+############################################################
+
     def listaComentario(nickName):
 	pool = ConnectionPool('baseDeDatos')
 	col_fam = pycassa.ColumnFamily(pool, 'Comentario')
@@ -207,7 +244,12 @@ class Comentario:
 	    return "FALSE"
 
 ############################################################
-#-------------------- Lista  Respuesta --------------------#
+#---------------------- Lista Respuesta--------------------#
+#	Procedimiento que se encarga de listar		   #
+#	las respuestas dadas a un comentario en		   #
+#	especifico, se muestra el arbol de respuestas	   #
+#	segun su jerarquia.				   #
+############################################################
     def listaRespuesta(usuarioRespuesta,idComentario):
 	
 	pool = ConnectionPool('baseDeDatos')
@@ -226,6 +268,14 @@ class Comentario:
 
 ############################################################
 #----------------- Lista Etiqueta--------------------------#
+#	Procedimiento que se encarga de listar		   #
+#	los datos de comentarios que contengan		   #
+#	la etiqueta solicitada via URL en el request	   #
+#	que se comunica a la vista y esta llama 	   #
+#	a dicha rutina para que retorne los datos buscados #
+#	para luego buscar el comentario y mostrar sus      #
+#	datos						   #  
+############################################################
     def listaEtiquetas(nombreEtiqueta):
 	
 	pool = ConnectionPool('baseDeDatos')
@@ -245,6 +295,11 @@ class Comentario:
 
 ############################################################
 #------------ Lista comentarios con etiquetas--------------#
+#	Procedimiento que se encarga de listar 		   #
+#	los comentarios y los datos del mismo		   #
+#	dado el idComentario y el nickName, siendo         #
+#	estos los identificadores de un comentario	   #
+############################################################
     def listarComentariosConEtiqueta(idComentario,nickName):
 	try:    
 	    listaDeComentarios = ' '
@@ -259,6 +314,10 @@ class Comentario:
 
 ############################################################
 #-----------------------Contar me gusta--------------------#
+#	Procedimiento que retorna un entero con el 	   #
+#	contador de registros que indican que le gusta	   #
+#	un comentario a un usuario			   #
+############################################################
     def contarMeGusta(idComentario):
 	try:	
 	    meGustan = 0
@@ -276,6 +335,10 @@ class Comentario:
 
 ############################################################
 #--------------------Contar no me gusta--------------------#
+#	Procedimiento que retorna un entero con el 	   #
+#	contador de registros que indican que no le gusta  #
+#	un comentario a un usuario			   #
+############################################################
     def contarNoMeGusta(idComentario):
 	try:	
 	    noMeGustan = 0
@@ -290,10 +353,12 @@ class Comentario:
 	else:
 		return noMeGustan
 
-
-
 ############################################################
 #----------------- GenerarId Comentario--------------------#
+#	Rutina que genera un id de Comentario para	   #
+#	luego insertarlo en la BD de forma secuencial	   #
+#	con un numero entero a partir del entero 1.	   #
+############################################################
 def generarIdComentario():
     vacio = True
     try:
@@ -316,7 +381,11 @@ def generarIdComentario():
 	    return nuevoId
 
 ############################################################
-#----------------- GenerarId Gusta--------------------#
+#-------------------- GenerarId Gusta----------------------#
+#	Rutina que genera un id de Gusto para	           #
+#	luego insertarlo en la BD de forma secuencial	   #
+#	con un numero entero a partir del entero 1.	   #
+############################################################
 def generarIdGusta():
     vacio = True
     try:
@@ -339,6 +408,10 @@ def generarIdGusta():
 
 ############################################################
 #----------------- Generar Id de Etiqueta------------------#
+#	Rutina que genera un id de Etiqueta para	   #
+#	luego insertarlo en la BD de forma secuencial	   #
+#	con un numero entero a partir del entero 1.	   #
+############################################################
 def generarIdEtiqueta():
     vacio = True
     try:
@@ -360,6 +433,11 @@ def generarIdEtiqueta():
         else:
             nuevoId = str(listaIdEtiqueta[0])
 	    return nuevoId
+
+
+############################################################
+#------------------ Agregar Etiquetas ---------------------#
+############################################################
 
 def agregarEtiquetas(etiquetas,idComentario,nickName):
 
