@@ -1,16 +1,3 @@
-#*********************************************************************************************
-#                      Archivo: urls.py
-#                      -------------------
-#   copyright            : (C) 2012 by Developer Group: Jose Francisco
-#							de Jesus Perez Vera
-#                                                       Armen Djenanian Dertorossian
-#							Kristian Cortes
-# ********************************************************************************************
-# PlatformCommentAdapter. Proyecto de Desarrollo del Software
-# ********************************************************************************************
-# Descripcion : Archivo que los urls que contienen los servicios web
-# ********************************************************************************************
-
 from django.conf.urls.defaults import *
 from misitio.views.viewsUsuario import registrarUsuario,iniciarSesion,modificarUsuario,eliminarUsuario
 from misitio.views.viewsComentario import registrarComentario,responderComentario,listarComentario,meGusta,eliminarComentarios,listarRespuesta,listarEtiqueta,cuentaMeGusta,cuentaNoMeGusta

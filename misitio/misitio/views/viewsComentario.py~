@@ -8,7 +8,7 @@
 # ********************************************************************************************
 # PlatformCommentAdapter. Proyecto de Desarrollo del Software
 # ********************************************************************************************
-# Descripcion : Archivo que contiene la vista Comentario
+# Descripcion : Archivo que contiene la vista Usuario
 # ********************************************************************************************
 
 from django.http import HttpResponse

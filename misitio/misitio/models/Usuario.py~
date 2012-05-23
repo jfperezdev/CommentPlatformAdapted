@@ -1,16 +1,3 @@
-#*********************************************************************************************
-#                      Archivo: Usuario.py
-#                      -------------------
-#   copyright            : (C) 2012 by Developer Group: Jose Francisco
-#							de Jesus Perez Vera
-#                                                       Armen Djenanian Dertorossian
-#							Kristian Cortes
-# ********************************************************************************************
-# PlatformCommentAdapter. Proyecto de Desarrollo del Software
-# ********************************************************************************************
-# Descripcion : Archivo que contiene la Clase Usuario
-# ********************************************************************************************
-
 import pycassa
 from pycassa.pool import ConnectionPool
 from pycassa.columnfamily import ColumnFamily
