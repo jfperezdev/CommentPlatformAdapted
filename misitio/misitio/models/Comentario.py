@@ -45,7 +45,7 @@ class Comentario:
         except Exception:
             return "FALSE"
         else:
-            return "TRUE"
+            return elId
 
 ############################################################
 #--------------- Responder Comentario ---------------------#
@@ -136,6 +136,7 @@ class Comentario:
                 return "ERROR"
             nickName = resultado ['nickName']
             if (self.nickName == nickName): 
+		deleteOnCascade(str(idComentario))
                 col_fam.remove(str(idComentario))
             else:
                 return 'Error'
@@ -143,6 +144,19 @@ class Comentario:
             return "FALSE"
         else:
             return "TRUE"
+
+############################################################
+#------------------ Delete On Cascade ---------------------#
+#	Borra en cascada las respuestas asociadas          #
+#	Al Comentario que se acaba de eliminar	           #
+############################################################
+def deleteOnCascade(idComentario):
+    pool2 = ConnectionPool('baseDeDatos')
+    col_fam2 = pycassa.ColumnFamily(pool2, 'Comentario')
+    resultado = col_fam2.get_range(column_start='adjunto', column_finish='usuarioRespuesta')
+    for key,columns in resultado:
+        if len(columns) > 6 and columns['idComentario'] == idComentario:
+            col_fam2.remove(key)	 
 
 ############################################################
 #--------------------- poner me Gusta----------------------#

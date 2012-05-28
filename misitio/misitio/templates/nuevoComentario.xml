@@ -1,0 +1,4 @@
+<Respuesta>
+	<mensaje>{{ mensajeRespuesta }}</mensaje>
+	<idComentario>{{ idComentario }}</idComentario>
+</Respuesta>

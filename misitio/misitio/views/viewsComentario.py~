@@ -62,10 +62,10 @@ def registrarComentario(request):
     elToken.ip = ip
   
     miToken = elToken.validarToken()
-    laTransaccion = elComentario.registrarComentario(etiquetas)  
+    elId = elComentario.registrarComentario(etiquetas)  
     if  miToken == "TRUE":
-        if laTransaccion == "TRUE":	
-       	    return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Se ha agregado satisfactoriamente el Comentario el dia: "+elComentario.fecha},mimetype='application/xml')
+        if elId != "FALSE":	
+       	    return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Se ha agregado satisfactoriamente el Comentario el dia: "+elComentario.fecha,'idComentario': elId},mimetype='application/xml')
 	else:
        	    return render_to_response('errorMensaje.xml', {'errorMensaje': "Error al tratar de generar el Comentario el dia:" +elComentario.fecha},mimetype='application/xml')
     elif miToken =="Error":
@@ -265,8 +265,12 @@ def meGusta(request):
         return render_to_response('errorMensaje.xml', {'errorMensaje': "Error el comentario no existe"},mimetype='application/xml') 
 
 
-################################################################
-#--------------------- Eliminar Comentarios--------------------#
+############################################################
+#----------------- Eliminar Comentario --------------------#
+#	Procedimiento que permite eliminar un comentario   #
+#	validando que unicamente el creador del mismo	   #
+#	es quien esta ejecutando dicha operacion	   #
+############################################################
 def eliminarComentarios(request):
 
     datosComentario =  request.raw_post_data
@@ -353,7 +357,7 @@ def cuentaMeGusta(request):
 
     contador = GestionComentario.contarMeGusta(idComentario)
     if (contador == "FALSE"):
-	return render_to_response('errorMensaje.xml', {'errorMensaje': "Este comentario no existe"+idComentario},mimetype='application/xml')
+	return render_to_response('errorMensaje.xml', {'errorMensaje': "Este comentario no existe"},mimetype='application/xml')
     else:
 	return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "A "+ str(contador) + " Personas le(s) gusta este comentario "},mimetype='application/xml')
 
