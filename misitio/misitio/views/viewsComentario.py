@@ -110,11 +110,8 @@ def responderComentario(request):
     elComentario.adjunto = adjunto
     elComentario.token = token
     elComentario.fecha = str (now)
-   
-    pool = ConnectionPool('baseDeDatos')
-    col_fam = pycassa.ColumnFamily(pool, 'Comentario') 
-    resultado = col_fam.get(idComentario,columns=['nickName']) 
-    usuario = resultado['nickName']
+    
+    usuario = GestionComentario.validarUsuarioRespuesta(idComentario)
 
     elToken = GestionToken.Token()
     ip = str(request.META['REMOTE_ADDR']) 

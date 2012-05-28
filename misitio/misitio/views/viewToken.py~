@@ -43,5 +43,5 @@ def verificarToken(request):
     if elToken.validarToken == "TRUE":	
        return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Correcto"},mimetype='application/xml')
     else:
-       return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Incorrecto"},mimetype='application/xml')
+       return render_to_response('errorMensaje.xml', {'errorMensaje': "Incorrecto"},mimetype='application/xml')
 

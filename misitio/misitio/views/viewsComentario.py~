@@ -65,7 +65,7 @@ def registrarComentario(request):
     elId = elComentario.registrarComentario(etiquetas)  
     if  miToken == "TRUE":
         if elId != "FALSE":	
-       	    return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Se ha agregado satisfactoriamente el Comentario el dia: "+elComentario.fecha,'idComentario': elId},mimetype='application/xml')
+       	    return render_to_response('nuevoComentario.xml', {'mensajeRespuesta': "Se ha agregado satisfactoriamente el Comentario el dia: "+elComentario.fecha,'idComentario': elId},mimetype='application/xml')
 	else:
        	    return render_to_response('errorMensaje.xml', {'errorMensaje': "Error al tratar de generar el Comentario el dia:" +elComentario.fecha},mimetype='application/xml')
     elif miToken =="Error":
@@ -110,11 +110,8 @@ def responderComentario(request):
     elComentario.adjunto = adjunto
     elComentario.token = token
     elComentario.fecha = str (now)
-   
-    pool = ConnectionPool('baseDeDatos')
-    col_fam = pycassa.ColumnFamily(pool, 'Comentario') 
-    resultado = col_fam.get(idComentario,columns=['nickName']) 
-    usuario = resultado['nickName']
+    
+    usuario = GestionComentario(idComentario)
 
     elToken = GestionToken.Token()
     ip = str(request.META['REMOTE_ADDR']) 

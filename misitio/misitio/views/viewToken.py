@@ -23,6 +23,9 @@ from pycassa.columnfamily import ColumnFamily
 
 ############################################################
 #----------------- Verificar Token-------------------------#
+#	Procedimiento que valida el token para		   #
+#	saber si el token enviado es correcto	           #
+############################################################
 def verificarToken(request):
 
     datosToken =  request.raw_post_data

@@ -45,7 +45,7 @@ class Comentario:
         except Exception:
             return "FALSE"
         else:
-            return "TRUE"
+            return elId
 
 ############################################################
 #--------------- Responder Comentario ---------------------#
@@ -71,6 +71,20 @@ class Comentario:
             return "FALSE"
         else:
             return "TRUE"
+
+############################################################
+#-------------- Validar Usuario Respuesta  ----------------#
+def validarUsuarioRespuesta(idComentario):
+    try:
+        pool = ConnectionPool('baseDeDatos')
+        col_fam = pycassa.ColumnFamily(pool, 'Comentario') 
+        resultado = col_fam.get(idComentario,columns=['nickName']) 
+        usuario = resultado['nickName']
+    except Exception:
+        return "FALSE"
+    else:
+        return usuario
+
 
 ############################################################
 #------------------ Admite Respuesta  ---------------------#

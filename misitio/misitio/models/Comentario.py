@@ -73,6 +73,25 @@ class Comentario:
             return "TRUE"
 
 ############################################################
+#-------------- Validar Usuario Respuesta  ----------------#
+#	Procedimiento que valida si el usuario		   #
+#	al que se quiere responder existe, esta asociado   #
+#	al comentario y ademas el idComentario esta	   #
+#	registrado en persistencia			   #
+############################################################
+def validarUsuarioRespuesta(idComentario):
+    try:
+        pool = ConnectionPool('baseDeDatos')
+        col_fam = pycassa.ColumnFamily(pool, 'Comentario') 
+        resultado = col_fam.get(idComentario,columns=['nickName']) 
+        usuario = resultado['nickName']
+    except Exception:
+        return "FALSE"
+    else:
+        return usuario
+
+
+############################################################
 #------------------ Admite Respuesta  ---------------------#
 #	Procedimiento que verifica si un comentario	   #
 #	admite respuesta				   #
