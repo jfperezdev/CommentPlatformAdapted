@@ -39,8 +39,6 @@ def registrarComentario(request):
 	    nickName = i.text
 	elif i.tag == "texto":
 	    texto = i.text
-	elif i.tag == "adjunto":
-	    adjunto = i.text
 	elif i.tag == "token":
 	    token = i.text
 	elif i.tag == "admiteRespuesta":
@@ -51,7 +49,6 @@ def registrarComentario(request):
     elComentario = GestionComentario.Comentario()
     elComentario.nickName = nickName
     elComentario.texto = texto
-    elComentario.adjunto = adjunto
     elComentario.token = token
     elComentario.admiteRespuesta = admiteRespuesta
     elComentario.fecha = str (now)
@@ -96,8 +93,8 @@ def responderComentario(request):
 		idComentario = i.text
 	elif i.tag == "texto":
 		texto = i.text
-	elif i.tag == "adjunto":
-		adjunto = i.text
+	elif i.tag == "admiteRespuesta":
+		admiteRespuesta = i.text
 	elif i.tag == "token":
 		token = i.text
 
@@ -107,7 +104,7 @@ def responderComentario(request):
     elComentario.usuarioRespuesta = usuarioRespuesta
     elComentario.idComentario = idComentario
     elComentario.texto = texto
-    elComentario.adjunto = adjunto
+    elComentario.admiteRespuesta = admiteRespuesta
     elComentario.token = token
     elComentario.fecha = str (now)
     
@@ -121,7 +118,7 @@ def responderComentario(request):
   
     if(usuario == usuarioRespuesta):
         if elToken.validarToken() == "TRUE":
-	     if elComentario.admitirRespuesta(idComentario) == "TRUE":
+	     if GestionComentario.admitirRespuesta(idComentario) == "TRUE":
 	         if elComentario.responderComentario() == "TRUE":
 	             elComentario.notificarRespuestaComentario(usuarioRespuesta)	
 		     return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Se ha agregado satisfactoriamente la respuesta el dia: "+elComentario.fecha},mimetype='application/xml')
@@ -162,10 +159,9 @@ def listarComentario(request,nickName):
 	    usuario = "\n     <nickName>"+valores[1]+"</nickName>"
 	    texto = "\n     <texto>"+valores[2]+"</texto>"
 	    token = "\n     <token>"+valores[3]+"</token>"
-	    adjunto = "\n     <adjunto>"+valores[4]+"</adjunto>"
-	    meGusta = "\n     <meGusta>"+valores[5]+"</meGusta>"
-	    noMeGusta = "\n     <noMeGusta>"+valores[6]+"</noMeGusta>\n"
-	    datos = datos + identificador + usuario + texto + token + adjunto + meGusta + noMeGusta
+	    meGusta = "\n     <meGusta>"+valores[4]+"</meGusta>"
+	    noMeGusta = "\n     <noMeGusta>"+valores[5]+"</noMeGusta>\n"
+	    datos = datos + identificador + usuario + texto + token + meGusta + noMeGusta
 	    i = i + 1
 	datos = datos + "\n<listaComentario>"
 	return HttpResponse(datos, content_type= "application/xml")

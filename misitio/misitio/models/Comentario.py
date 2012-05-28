@@ -34,7 +34,6 @@ class Comentario:
                 self.idComentario = elId 
                 col_fam.insert (self.idComentario, {'nickName': self.nickName
 						   ,'texto': self.texto 
-                                                   ,'adjunto': self.adjunto
 						   ,'admiteRespuesta': self.admiteRespuesta
 						   ,'fecha': self.fecha
 						   ,'token': self.token})
@@ -64,48 +63,9 @@ class Comentario:
 						 ,'idComentario': self.idComentario
 						 ,'usuarioRespuesta': self.usuarioRespuesta
 						 ,'texto': self.texto
-						 ,'adjunto': self.adjunto
+						 ,'admiteRespuesta': self.admiteRespuesta
 						 ,'fecha': self.fecha
 						 ,'token': self.token})
-        except Exception:
-            return "FALSE"
-        else:
-            return "TRUE"
-
-############################################################
-#-------------- Validar Usuario Respuesta  ----------------#
-#	Procedimiento que valida si el usuario		   #
-#	al que se quiere responder existe, esta asociado   #
-#	al comentario y ademas el idComentario esta	   #
-#	registrado en persistencia			   #
-############################################################
-def validarUsuarioRespuesta(idComentario):
-    try:
-        pool = ConnectionPool('baseDeDatos')
-        col_fam = pycassa.ColumnFamily(pool, 'Comentario') 
-        resultado = col_fam.get(idComentario,columns=['nickName']) 
-        usuario = resultado['nickName']
-    except Exception:
-        return "FALSE"
-    else:
-        return usuario
-
-
-############################################################
-#------------------ Admite Respuesta  ---------------------#
-#	Procedimiento que verifica si un comentario	   #
-#	admite respuesta				   #
-############################################################
-    def admitirRespuesta(self,idComentario):
-        try:	
-            pool = ConnectionPool('baseDeDatos')
-            col_fam = pycassa.ColumnFamily(pool, 'Comentario')
-            resultado = col_fam.get(idComentario,columns=['admiteRespuesta']) 
-            admiteRespuesta = resultado['admiteRespuesta']
-            if (admiteRespuesta == "True"):
-                return "TRUE"
-            else:
-                return "FALSE"
         except Exception:
             return "FALSE"
         else:
@@ -163,19 +123,6 @@ def validarUsuarioRespuesta(idComentario):
             return "FALSE"
         else:
             return "TRUE"
-
-############################################################
-#------------------ Delete On Cascade ---------------------#
-#	Borra en cascada las respuestas asociadas          #
-#	Al Comentario que se acaba de eliminar	           #
-############################################################
-def deleteOnCascade(idComentario):
-    pool2 = ConnectionPool('baseDeDatos')
-    col_fam2 = pycassa.ColumnFamily(pool2, 'Comentario')
-    resultado = col_fam2.get_range(column_start='adjunto', column_finish='usuarioRespuesta')
-    for key,columns in resultado:
-        if len(columns) > 6 and columns['idComentario'] == idComentario:
-            col_fam2.remove(key)	 
 
 ############################################################
 #--------------------- poner me Gusta----------------------#
@@ -262,7 +209,7 @@ def deleteOnCascade(idComentario):
 	
         pool = ConnectionPool('baseDeDatos')
         col_fam = pycassa.ColumnFamily(pool, 'Comentario')
-        resultado = col_fam.get_range(column_start='adjunto', column_finish='usuarioRespuesta')
+        resultado = col_fam.get_range(column_start='admiteRespuesta', column_finish='usuarioRespuesta')
         encontrado = False
         listaDeComentarios = []
         for key,columns in resultado:
@@ -373,7 +320,7 @@ def contarNoMeGusta(idComentario):
 def listaComentario(nickName):
     pool = ConnectionPool('baseDeDatos')
     col_fam = pycassa.ColumnFamily(pool, 'Comentario')
-    resultado = col_fam.get_range(column_start='adjunto', column_finish='token')
+    resultado = col_fam.get_range(column_start='admiteRespuesta', column_finish='token')
     encontrado = False
     listaDeComentarios = []
     for key,columns in resultado:
@@ -384,7 +331,7 @@ def listaComentario(nickName):
 		meGusta = str(0)
 	    if(noMeGusta == "FALSE"):
 		noMeGusta = str(0)
-            listaDeComentarios.append(key+":"+columns['nickName']+":"+columns['texto']+":"+columns['token']+":"+columns['adjunto']+":"+str(meGusta)+":"+str(noMeGusta))
+            listaDeComentarios.append(key+":"+columns['nickName']+":"+columns['texto']+":"+columns['token']+":"+str(meGusta)+":"+str(noMeGusta))
             encontrado = True
 
     if(encontrado):
@@ -489,7 +436,59 @@ def agregarEtiquetas(etiquetas,idComentario,nickName):
         idEtiqueta = generarIdEtiqueta()
         if idEtiqueta != "FALSE":
             idEtiqueta = str(idEtiqueta)
-            nombreEtiqueta = arreglo[i] 
+            nombreEtiqueta = "#"+arreglo[i] 
             col_fam.insert (idEtiqueta, {'nombreEtiqueta': nombreEtiqueta,'idComentario': idComentario,'nickName':nickName})
         i = i + 1
+
+############################################################
+#------------------ Admitir Respuesta  --------------------#
+#	Procedimiento que verifica si un comentario	   #
+#	admite respuesta				   #
+############################################################
+def admitirRespuesta(idComentario):
+    try:	
+        pool = ConnectionPool('baseDeDatos')
+        col_fam = pycassa.ColumnFamily(pool, 'Comentario')
+        resultado = col_fam.get(idComentario,columns=['admiteRespuesta']) 
+        admiteRespuesta = resultado['admiteRespuesta']
+        if (admiteRespuesta == "True"):
+            return "TRUE"
+        else:
+            return "FALSE"
+    except Exception:
+        return "FALSE"
+    else:
+        return "TRUE"
+
+############################################################
+#------------------ Delete On Cascade ---------------------#
+#	Borra en cascada las respuestas asociadas          #
+#	Al Comentario que se acaba de eliminar	           #
+############################################################
+def deleteOnCascade(idComentario):
+    pool2 = ConnectionPool('baseDeDatos')
+    col_fam2 = pycassa.ColumnFamily(pool2, 'Comentario')
+    resultado = col_fam2.get_range(column_start='admiteRespuesta', column_finish='usuarioRespuesta')
+    for key,columns in resultado:
+        if len(columns) > 6 and columns['idComentario'] == idComentario:
+	    deleteOnCascade(key)            
+	    col_fam2.remove(key)
+
+############################################################
+#-------------- Validar Usuario Respuesta  ----------------#
+#	Procedimiento que valida si el usuario		   #
+#	al que se quiere responder existe, esta asociado   #
+#	al comentario y ademas el idComentario esta	   #
+#	registrado en persistencia			   #
+############################################################
+def validarUsuarioRespuesta(idComentario):
+    try:
+        pool = ConnectionPool('baseDeDatos')
+        col_fam = pycassa.ColumnFamily(pool, 'Comentario') 
+        resultado = col_fam.get(idComentario,columns=['nickName']) 
+        usuario = resultado['nickName']
+    except Exception:
+        return "FALSE"
+    else:
+        return usuario	 
 
