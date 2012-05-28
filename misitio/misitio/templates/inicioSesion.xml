@@ -1,0 +1,4 @@
+<InicioSesion>
+	<mensaje>{{ mensajeRespuesta }}</mensaje>	
+	<token>{{ token }}</token>
+</InicioSesion>

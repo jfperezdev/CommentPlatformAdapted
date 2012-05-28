@@ -67,11 +67,11 @@ def registrarComentario(request):
         if laTransaccion == "TRUE":	
        	    return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Se ha agregado satisfactoriamente el Comentario el dia: "+elComentario.fecha},mimetype='application/xml')
 	else:
-       	    return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error al tratar de generar el Comentario el dia:" +elComentario.fecha},mimetype='application/xml')
+       	    return render_to_response('errorMensaje.xml', {'errorMensaje': "Error al tratar de generar el Comentario el dia:" +elComentario.fecha},mimetype='application/xml')
     elif miToken =="Error":
-        return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Lo sentimos el tiempo de su token ha expirado. Vuelva a Iniciar Sesion"},mimetype='application/xml')
+        return render_to_response('errorMensaje.xml', {'errorMensaje': "Lo sentimos el tiempo de su token ha expirado. Vuelva a Iniciar Sesion"},mimetype='application/xml')
     else:
-        return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error el token enviado es incorrecto"},mimetype='application/xml')
+        return render_to_response('errorMensaje.xml', {'errorMensaje': "Error el token enviado es incorrecto"},mimetype='application/xml')
 	
 ############################################################
 #----------------- Responder Comentario--------------------#
@@ -129,16 +129,16 @@ def responderComentario(request):
 	             elComentario.notificarRespuestaComentario(usuarioRespuesta)	
 		     return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Se ha agregado satisfactoriamente la respuesta el dia: "+elComentario.fecha},mimetype='application/xml')
 		 else:
-		     return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error al tratar de generar la respuesta el dia:" +elComentario.fecha},mimetype='application/xml')
+		     return render_to_response('errorMensaje.xml', {'errorMensaje': "Error al tratar de generar la respuesta el dia:" +elComentario.fecha},mimetype='application/xml')
 	     else:
-	        return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Este comentario no admite respuesta"},mimetype='application/xml')
+	        return render_to_response('errorMensaje.xml', {'errorMensaje': "Este comentario no admite respuesta"},mimetype='application/xml')
         elif elToken.validarToken() == "Error":
-	    return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Lo sentimos el tiempo de su token ha expirado. Vuelva a Iniciar Sesion"},mimetype='application/xml')
+	    return render_to_response('errorMensaje.xml', {'errorMensaje': "Lo sentimos el tiempo de su token ha expirado. Vuelva a Iniciar Sesion"},mimetype='application/xml')
             		
         else:
-	    return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error el token enviado es incorrecto"},mimetype='application/xml')
+	    return render_to_response('errorMensaje.xml', {'errorMensaje': "Error el token enviado es incorrecto"},mimetype='application/xml')
     else:
-        return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "La respuesta no esta asociada al comentario"},mimetype='application/xml')
+        return render_to_response('errorMensaje.xml', {'errorMensaje': "La respuesta no esta asociada al comentario"},mimetype='application/xml')
 
 ############################################################
 #-------------------- Lista  Comentario--------------------#
@@ -155,7 +155,7 @@ def listarComentario(request,nickName):
     listaDeComentarios = GestionComentario.listaComentario(nickName)
 	
     if  listaDeComentarios == "FALSE":	
-        return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error no se encuentran comentarios para esta persona"},mimetype='application/xml')
+        return render_to_response('errorMensaje.xml', {'errorMensaje': "Error no se encuentran comentarios para esta persona"},mimetype='application/xml')
     else:
         datos = "<listaComentario>"
     	i = 0
@@ -165,8 +165,10 @@ def listarComentario(request,nickName):
 	    usuario = "\n     <nickName>"+valores[1]+"</nickName>"
 	    texto = "\n     <texto>"+valores[2]+"</texto>"
 	    token = "\n     <token>"+valores[3]+"</token>"
-	    adjunto = "\n     <adjunto>"+valores[4]+"</adjunto>\n"
-	    datos = datos + identificador + usuario + texto + token + adjunto
+	    adjunto = "\n     <adjunto>"+valores[4]+"</adjunto>"
+	    meGusta = "\n     <meGusta>"+valores[5]+"</meGusta>"
+	    noMeGusta = "\n     <noMeGusta>"+valores[6]+"</noMeGusta>\n"
+	    datos = datos + identificador + usuario + texto + token + adjunto + meGusta + noMeGusta
 	    i = i + 1
 	datos = datos + "\n<listaComentario>"
 	return HttpResponse(datos, content_type= "application/xml")
@@ -192,7 +194,7 @@ def listarRespuesta(request):
     laRespuesta = GestionComentario.Comentario()
     listaDeRespuestas = GestionComentario.listaRespuesta(nickName,idComentario)
     if listaDeRespuestas == "FALSE":	
-        return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error no se encuentran respuestas para esta persona"},mimetype='application/xml')
+        return render_to_response('errorMensaje.xml', {'errorMensaje': "Error no se encuentran respuestas para esta persona"},mimetype='application/xml')
     else:
         datos = "<listaRespuesta>"
     	i = 0
@@ -243,24 +245,24 @@ def meGusta(request):
         if elToken.validarToken() == "TRUE":
 	    if(gusto=='TRUE'):#me gusta
                 if(elComentario.ponerMeGusta()=="TRUE"):
-		    return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Se a Agregado un 'Me Gusta' al comentario satisfactoriamente"},mimetype='application/xml')
+		    return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Se ha Agregado un 'Me Gusta' al comentario satisfactoriamente"},mimetype='application/xml')
 		elif(elComentario.ponerMeGusta()=="FALSE"):
-		    return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "No se puede colocar 'Me Gusta' a este comentario otra vez"},mimetype='application/xml')
+		    return render_to_response('errorMensaje.xml', {'errorMensaje': "No se puede colocar 'Me Gusta' a este comentario otra vez"},mimetype='application/xml')
 		else:
-		    return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "El cambio de 'No Me Gusta' a 'Me Gusta' a sido exitoso"},mimetype='application/xml')
+		    return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "El cambio de 'No Me Gusta' a 'Me Gusta' ha sido exitoso"},mimetype='application/xml')
 	    else:#no me gusta
 	        if(elComentario.ponerNoMeGusta()=="TRUE"):
-		    return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Se a Agregado un 'No Me Gusta' al comentario satisfactoriamente"},mimetype='application/xml')
+		    return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Se ha Agregado un 'No Me Gusta' al comentario satisfactoriamente"},mimetype='application/xml')
 		elif(elComentario.ponerNoMeGusta()=="FALSE"):
-		    return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "No se puede colocar 'No Me Gusta' a este comentario otra vez"},mimetype='application/xml')
+		    return render_to_response('errorMensaje.xml', {'errorMensaje': "No se puede colocar 'No Me Gusta' a este comentario otra vez"},mimetype='application/xml')
 		else:
-		    return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "El cambio de 'Me Gusta' a 'No Me Gusta' a sido exitoso"},mimetype='application/xml')
+		    return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "El cambio de 'Me Gusta' a 'No Me Gusta' ha sido exitoso"},mimetype='application/xml')
         elif elToken.validarToken()=="Error":
-	    return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Lo sentimos el tiempo de su token ha expirado. Vuelva a Iniciar Sesion"},mimetype='application/xml')
+	    return render_to_response('errorMensaje.xml', {'errorMensaje': "Lo sentimos el tiempo de su token ha expirado. Vuelva a Iniciar Sesion"},mimetype='application/xml')
 	else:
-	    return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error el token enviado es incorrecto"},mimetype='application/xml')
+	    return render_to_response('errorMensaje.xml', {'errorMensaje': "Error el token enviado es incorrecto"},mimetype='application/xml')
     else:
-        return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error el comentario no existe"},mimetype='application/xml') 
+        return render_to_response('errorMensaje.xml', {'errorMensaje': "Error el comentario no existe"},mimetype='application/xml') 
 
 
 ################################################################
@@ -313,7 +315,7 @@ def eliminarComentarios(request):
 def listarEtiqueta(request,nombreEtiqueta):
     listaDeDatosComentario = GestionComentario.listaEtiquetas(nombreEtiqueta)
     if  listaDeDatosComentario == "FALSE":
-        return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error no se encuentran comentarios con esta etiqueta"},mimetype='application/xml')
+        return render_to_response('errorMensaje.xml', {'errorMensaje': "Error no se encuentran comentarios con esta etiqueta"},mimetype='application/xml')
     else:
         datos = "<listaComentariosConEtiquetas>\n"
     	i = 0
@@ -351,7 +353,7 @@ def cuentaMeGusta(request):
 
     contador = GestionComentario.contarMeGusta(idComentario)
     if (contador == "FALSE"):
-	return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Este comentario no existe"},mimetype='application/xml')
+	return render_to_response('errorMensaje.xml', {'errorMensaje': "Este comentario no existe"},mimetype='application/xml')
     else:
 	return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "A "+ str(contador) + " Personas le(s) gusta este comentario "},mimetype='application/xml')
 
@@ -372,6 +374,6 @@ def cuentaNoMeGusta(request):
 	
     contador = GestionComentario.contarNoMeGusta(idComentario)
     if (contador == "FALSE"):
-	return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Este comentario no existe"},mimetype='application/xml')
+	return render_to_response('errorMensaje.xml', {'errorMensaje': "Este comentario no existe"},mimetype='application/xml')
     else:
 	return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "A "+ str(contador) + " Personas NO le(s) gusta este comentario "},mimetype='application/xml')

@@ -70,9 +70,9 @@ def registrarUsuario(request):
     if elUsuario.registrarse() == "TRUE":	
         return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Se ha agregado satisfactoriamente el usuario "+elUsuario.nickName},mimetype='application/xml')
     elif elUsuario.registrarse() == "Error":
-        return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "El usuario "+elUsuario.nickName+" ya se encuentra registrado"},mimetype='application/xml')
+        return render_to_response('errorMensaje.xml', {'errorMensaje': "El usuario "+elUsuario.nickName+" ya se encuentra registrado"},mimetype='application/xml')
     else:
-	return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error al tratar de registrar al usuario "+elUsuario.nickName},mimetype='application/xml')
+	return render_to_response('errorMensaje.xml', {'errorMensaje': "Error al tratar de registrar al usuario "+elUsuario.nickName},mimetype='application/xml')
 
 ############################################################
 #----------------- Modificar Usuario-----------------------#
@@ -135,11 +135,11 @@ def modificarUsuario(request):
         if elUsuario.modificarse() == "TRUE":	
        	    return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Se ha modificado satisfactoriamente el usuario "+elUsuario.nickName},mimetype='application/xml')
 	else:
-       	    return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error al tratar de modificar al usuario "+elUsuario.nickName},mimetype='application/xml')
+       	    return render_to_response('errorMensaje.xml', {'errorMensaje': "Error al tratar de modificar al usuario "+elUsuario.nickName},mimetype='application/xml')
     elif miToken == "Error":
-	return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Lo sentimos el tiempo de su token ha expirado. Vuelva a Iniciar Sesion"},mimetype='application/xml')
+	return render_to_response('errorMensaje.xml', {'errorMensaje': "Lo sentimos el tiempo de su token ha expirado. Vuelva a Iniciar Sesion"},mimetype='application/xml')
     else:
-	return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error el token enviado es incorrecto"},mimetype='application/xml')
+	return render_to_response('errorMensaje.xml', {'errorMensaje': "Error el token enviado es incorrecto"},mimetype='application/xml')
 	
 ############################################################
 #-------------------- Iniciar Sesion-----------------------#
@@ -182,15 +182,15 @@ def iniciarSesion(request):
         now = datetime.datetime.now()
 	miToken = elToken.insertarToken()
         if(miToken != "FALSE"):
-	    return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Se ha iniciado sesion satisfactoriamente con su cuenta. Su token es:" + miToken},mimetype='application/xml')
+	    return render_to_response('inicioSesion.xml', {'mensajeRespuesta': "Se ha iniciado sesion satisfactoriamente con su cuenta", 'token': miToken },mimetype='application/xml')
 	else:	
-	    return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error no se ha podido crear el Token"},mimetype='application/xml')
+	    return render_to_response('errorMensaje.xml', {'errorMensaje': "Error no se ha podido crear el Token"},mimetype='application/xml')
 	    	
     elif esUsuarioValido == "FALSE":
-	return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error, verifique su nickName y password"},
+	return render_to_response('errorMensaje.xml', {'errorMensaje': "Error, verifique su nickName y password"},
 	mimetype='application/xml')
     elif (esUsuarioValido == "TRUE" and tieneToken == "TRUE"):
-	return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error, " + nickName +" aun tiene un token valido"},
+	return render_to_response('errorMensaje.xml', {'errorMensaje': "Error, " + nickName +" aun tiene un token valido"},
 	mimetype='application/xml')
 
 ############################################################
@@ -229,8 +229,8 @@ def eliminarUsuario(request):
 	    if elUsuario.eliminarUsuario() == "TRUE":
 	        return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Se ha eliminado su cuenta satisfactoriamente"}, mimetype='application/xml')
 	    else:
-	        return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error, verifique su nickname y password"}, mimetype='application/xml')
+	        return render_to_response('errorMensaje.xml', {'errorMensaje': "Error, verifique su nickname y password"}, mimetype='application/xml')
         else:
-	    return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error el token enviado es incorrecto"},mimetype='application/xml')
+	    return render_to_response('errorMensaje.xml', {'errorMensaje': "Error el token enviado es incorrecto"},mimetype='application/xml')
     else:
-         return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Error, verifique su nickName y password"},mimetype='application/xml')
+         return render_to_response('errorMensaje.xml', {'errorMensaje': "Error, verifique su nickName y password"},mimetype='application/xml')
