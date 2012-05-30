@@ -18,6 +18,14 @@ import misitio.models.Usuario as GestionUsuario
 import misitio.models.Token as GestionToken
 import datetime
 import time
+import logging
+
+logger = logging.FileHandler('/home/usuario/ProyectoDesarrolloSoftware/misitio/misitio/logs/logs.log') #inicializacion para el manejo de logs
+console = logging.StreamHandler()
+logger.setLevel(logging.ERROR)
+formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+logger.setFormatter(formatter)
+logging.getLogger().addHandler(logger)
 
 ############################################################
 #----------------- Registrar Usuario-----------------------#
@@ -70,8 +78,10 @@ def registrarUsuario(request):
     if elUsuario.registrarse() == "TRUE":	
         return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Se ha agregado satisfactoriamente el usuario "+elUsuario.nickName},mimetype='application/xml')
     elif elUsuario.registrarse() == "Error":
+	logging.error('E-001:El usuario ' +elUsuario.nickName+ ' ya se encuentra registrado')
         return render_to_response('errorMensaje.xml', {'errorMensaje': "El usuario "+elUsuario.nickName+" ya se encuentra registrado"},mimetype='application/xml')
     else:
+	logging.error('E-002:Conexion no valida para el medio de persistencia al tratar de registrar al usuario')
 	return render_to_response('errorMensaje.xml', {'errorMensaje': "Error al tratar de registrar al usuario "+elUsuario.nickName},mimetype='application/xml')
 
 ############################################################
@@ -135,10 +145,13 @@ def modificarUsuario(request):
         if elUsuario.modificarse() == "TRUE":	
        	    return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Se ha modificado satisfactoriamente el usuario "+elUsuario.nickName},mimetype='application/xml')
 	else:
+	    logging.error('E-003:Conexion no valida para el medio de persistencia al tratar de modificar al usuario')
        	    return render_to_response('errorMensaje.xml', {'errorMensaje': "Error al tratar de modificar al usuario "+elUsuario.nickName},mimetype='application/xml')
     elif miToken == "Error":
+	logging.error('E-004:El token del usuario '+elUsuario.nickName+ ' ha expirado')
 	return render_to_response('errorMensaje.xml', {'errorMensaje': "Lo sentimos el tiempo de su token ha expirado. Vuelva a Iniciar Sesion"},mimetype='application/xml')
     else:
+	logging.error('E-005:Token no valido para el usuario '+elUsuario.nickName)
 	return render_to_response('errorMensaje.xml', {'errorMensaje': "Error el token enviado es incorrecto"},mimetype='application/xml')
 	
 ############################################################
@@ -184,12 +197,15 @@ def iniciarSesion(request):
         if(miToken != "FALSE"):
 	    return render_to_response('inicioSesion.xml', {'mensajeRespuesta': "Se ha iniciado sesion satisfactoriamente con su cuenta", 'token': miToken },mimetype='application/xml')
 	else:	
+	    logging.error('E-006:No se ha podido crear el token para el usuario '+elUsuario.nickName)
 	    return render_to_response('errorMensaje.xml', {'errorMensaje': "Error no se ha podido crear el Token"},mimetype='application/xml')
 	    	
     elif esUsuarioValido == "FALSE":
+	logging.error('E-007:Error al tratar de inciar sesion con el nickname '+nickName+ ' y el password '+password)
 	return render_to_response('errorMensaje.xml', {'errorMensaje': "Error, verifique su nickName y password"},
 	mimetype='application/xml')
     elif (esUsuarioValido == "TRUE" and tieneToken == "TRUE"):
+	logging.error('E-008:Error el usuario '+nickName+ ' tiene un token vigente')
 	return render_to_response('errorMensaje.xml', {'errorMensaje': "Error, " + nickName +" aun tiene un token valido"},
 	mimetype='application/xml')
 
@@ -229,8 +245,11 @@ def eliminarUsuario(request):
 	    if elUsuario.eliminarUsuario() == "TRUE":
 	        return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Se ha eliminado su cuenta satisfactoriamente"}, mimetype='application/xml')
 	    else:
+		ogging.error('E-009:Conexion no valida para el medio de persistencia al tratar de eliminar al usuario')
 	        return render_to_response('errorMensaje.xml', {'errorMensaje': "Error, verifique su nickname y password"}, mimetype='application/xml')
         else:
+	    logging.error('E-010:Error el token enviado por el usuario ' +elUsuario.nickName+' para eliminar su cuenta es incorrecto')
 	    return render_to_response('errorMensaje.xml', {'errorMensaje': "Error el token enviado es incorrecto"},mimetype='application/xml')
     else:
+	 logging.error('E-011:Error el token enviado por el usuario ' +elUsuario.nickName+ ' debe verificar su nickname y password')
          return render_to_response('errorMensaje.xml', {'errorMensaje': "Error, verifique su nickName y password"},mimetype='application/xml')
