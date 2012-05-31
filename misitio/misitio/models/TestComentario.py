@@ -12,10 +12,14 @@ class ComentarioTestCase(unittest.TestCase):
         elComentario.texto = "Comentario en plena prueba unitaria"
         elComentario.token = "23"
         elComentario.admiteRespuesta = "True"
-        elComentario.fecha = str (now)  
-        self.assertNotEqual(elComentario.registrarComentario(etiquetas),"FALSE")
+        elComentario.fecha = str (now) 
+	respuesta = elComentario.registrarComentario(etiquetas)
+        print "-------------------------------------------------------------------"
+        print "------------------TEST REGISTRAR COMENTARIO------------------------" 
+	print "La funcion retorna \n "+respuesta        
+        self.assertNotEqual(respuesta,"FALSE")
 
-    def test_segundo(self):
+    def test_responderComentario(self):
         now = datetime.datetime.now()
         elComentario = GestionComentario.Comentario()                
 
@@ -26,6 +30,44 @@ class ComentarioTestCase(unittest.TestCase):
         elComentario.admiteRespuesta = "True"
         elComentario.fecha = str(now)
         elComentario.token = "24"
+        respuesta = elComentario.responderComentario()
+        print "-------------------------------------------------------------------"
+        print "------------------TEST RESPONDER COMENTARIO------------------------"
+	print "La funcion retorna \n "+respuesta
         self.assertEqual(elComentario.responderComentario(),"TRUE")
-					
+
+    def test_listaRespuesta(self):
+        usuarioRespuesta = "Cisco"
+        idComentario = "1"
+        laRespuesta = GestionComentario.Comentario()
+        respuesta = GestionComentario.listaRespuesta(usuarioRespuesta,idComentario)
+        print "-------------------------------------------------------------------"
+        print "---------------------TEST LISTA RESPUESTA--------------------------"
+        print "La Funcion retorna \n "+str(respuesta) + "\n"
+        self.assertNotEqual(respuesta,"FALSE")
+
+    def test_admitirRespuesta(self):
+         idComentario = "1"
+         respuesta = GestionComentario.admitirRespuesta(idComentario)
+	 print "-------------------------------------------------------------------"
+         print "------------------TEST ADMITIR RESPUESTA---------------------------"
+	 print "La funcion retorna \n "+respuesta
+         self.assertEqual(respuesta,"TRUE")
+
+    def test_listarComentariosConEtiqueta(self):
+        idComentario = "2"
+        nickName = "Cisco"
+        respuesta = GestionComentario.listarComentariosConEtiqueta(idComentario,nickName)
+	print "-------------------------------------------------------------------"
+        print "-------------TEST LISTAR COMENTARIOS CON ETIQUETA------------------"
+	print "La funcion retorna \n "+str(respuesta)
+       	self.assertNotEqual(respuesta," ")
+
+    def test_listaEtiquetas(self):
+        nombreEtiqueta = "#Test"
+        respuesta = GestionComentario.listaEtiquetas(nombreEtiqueta)
+	print "-------------------------------------------------------------------"
+        print "-------------------TEST LISTAR RESPUESTA---------------------------"
+	print "La funcion retorna \n "+str(respuesta)
+        self.assertNotEqual(respuesta,"FALSE")			
 unittest.main()

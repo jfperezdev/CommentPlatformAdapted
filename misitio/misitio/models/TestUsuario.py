@@ -1,0 +1,46 @@
+from django.utils import unittest
+import Usuario as GestionUsuario
+
+class UsuarioTestCase(unittest.TestCase):
+
+    def test_eliminarUsuario(self):
+        elUsuario = GestionUsuario.Usuario()
+        elUsuario.nickName = "UsuarioPruebaUnitaria"
+        respuesta = elUsuario.eliminarUsuario()
+        print "-------------------------------------------------------------------"
+        print "------------------TEST ELIMINAR USUARIO----------------------------" 
+	print "La funcion retorna \n "+respuesta       
+        self.assertEqual(respuesta,"TRUE")
+
+    def test_validarUsuario(self):
+        nickName = "UsuarioPruebaUnitaria"
+        elUsuario = GestionUsuario.Usuario()
+        elUsuario.nickName = "UsuarioPruebaUnitaria"
+        elUsuario.password = "Unitaria"                
+        respuesta = elUsuario.validarSesion(nickName)
+        print "-------------------------------------------------------------------"
+        print "------------------TEST REGISTRAR USUARIO --------------------------" 
+	print "La funcion retorna \n "+respuesta
+        self.assertEqual(respuesta,"TRUE")
+   
+    def test_registrarse(self):
+        elUsuario = GestionUsuario.Usuario()
+        elUsuario.nickName = "UsuarioPruebaUnitaria"
+        elUsuario.password = "Unitaria"
+        elUsuario.primerNombre = "Prueba"
+        elUsuario.segundoNombre = "Unitaria"
+        elUsuario.primerApellido = "Proyecto"
+        elUsuario.segundoApellido = "Desarrollo"
+        elUsuario.email = "cisco721@gmail.com"
+        elUsuario.fechaNacimiento = "01/01/1991"
+        elUsuario.paisOrigen = "Venezuela"
+        elUsuario.biografia = "Esto es un usuario para una prueba unitaria"
+        elUsuario.foto = "pruebaUnitaria.jpg"
+        respuesta = elUsuario.registrarse()
+        print "-------------------------------------------------------------------"
+        print "------------------TEST REGISTRAR USUARIO --------------------------" 
+	print "La funcion retorna \n "+respuesta        
+        self.assertEqual(respuesta,"TRUE")
+
+unittest.main()
+ 

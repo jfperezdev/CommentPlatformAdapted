@@ -1,0 +1,42 @@
+2012-05-31 16:07:53,373 ERROR Internal Server Error: /Usuario/iniciar_sesion/
+Traceback (most recent call last):
+  File "/usr/local/lib/python2.7/dist-packages/django/core/handlers/base.py", line 111, in get_response
+    response = callback(request, *callback_args, **callback_kwargs)
+  File "/home/usuario/ProyectoDesarrolloSoftware/misitio/misitio/views/viewsUsuario.py", line 176, in iniciarSesion
+    tree = xml.fromstring(datosUsuario)
+  File "/usr/lib/python2.7/xml/etree/ElementTree.py", line 1283, in XML
+    return parser.close()
+  File "/usr/lib/python2.7/xml/etree/ElementTree.py", line 1636, in close
+    self._raiseerror(v)
+  File "/usr/lib/python2.7/xml/etree/ElementTree.py", line 1488, in _raiseerror
+    raise err
+ParseError: no element found: line 1, column 0
+2012-05-31 16:07:53,373 ERROR Internal Server Error: /Usuario/iniciar_sesion/
+Traceback (most recent call last):
+  File "/usr/local/lib/python2.7/dist-packages/django/core/handlers/base.py", line 111, in get_response
+    response = callback(request, *callback_args, **callback_kwargs)
+  File "/home/usuario/ProyectoDesarrolloSoftware/misitio/misitio/views/viewsUsuario.py", line 176, in iniciarSesion
+    tree = xml.fromstring(datosUsuario)
+  File "/usr/lib/python2.7/xml/etree/ElementTree.py", line 1283, in XML
+    return parser.close()
+  File "/usr/lib/python2.7/xml/etree/ElementTree.py", line 1636, in close
+    self._raiseerror(v)
+  File "/usr/lib/python2.7/xml/etree/ElementTree.py", line 1488, in _raiseerror
+    raise err
+ParseError: no element found: line 1, column 0
+2012-05-31 16:08:07,441 ERROR Internal Server Error: /Comentario/listar_respuestas/
+Traceback (most recent call last):
+  File "/usr/local/lib/python2.7/dist-packages/django/core/handlers/base.py", line 111, in get_response
+    response = callback(request, *callback_args, **callback_kwargs)
+  File "/home/usuario/ProyectoDesarrolloSoftware/misitio/misitio/views/viewsComentario.py", line 206, in listarRespuesta
+    listaDeRespuestas = GestionComentario.listaRespuesta(nickName,idComentario)
+AttributeError: 'module' object has no attribute 'listaRespuesta'
+2012-05-31 16:08:07,441 ERROR Internal Server Error: /Comentario/listar_respuestas/
+Traceback (most recent call last):
+  File "/usr/local/lib/python2.7/dist-packages/django/core/handlers/base.py", line 111, in get_response
+    response = callback(request, *callback_args, **callback_kwargs)
+  File "/home/usuario/ProyectoDesarrolloSoftware/misitio/misitio/views/viewsComentario.py", line 206, in listarRespuesta
+    listaDeRespuestas = GestionComentario.listaRespuesta(nickName,idComentario)
+AttributeError: 'module' object has no attribute 'listaRespuesta'
+2012-05-31 17:36:38,507 ERROR EU-008:Error el usuario Cisco tiene un token vigente
+2012-05-31 17:36:38,507 ERROR EU-008:Error el usuario Cisco tiene un token vigente
