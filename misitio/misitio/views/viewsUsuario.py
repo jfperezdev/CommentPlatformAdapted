@@ -20,12 +20,15 @@ import datetime
 import time
 import logging
 
-logger = logging.FileHandler('/home/usuario/ProyectoDesarrolloSoftware/misitio/misitio/logs/logs.log') #inicializacion para el manejo de logs
-console = logging.StreamHandler()
-logger.setLevel(logging.ERROR)
-formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
-logger.setFormatter(formatter)
-logging.getLogger().addHandler(logger)
+
+def inicializarLogs():
+    logger = logging.FileHandler('/home/usuario/ProyectoDesarrolloSoftware/misitio/misitio/logs/logs.log') #inicializacion para el manejo de logs
+    logger.setLevel(logging.ERROR)
+    formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+    logger.setFormatter(formatter)
+    logging.getLogger('').addHandler(logger)
+ 
+
 
 ############################################################
 #----------------- Registrar Usuario-----------------------#
@@ -74,10 +77,12 @@ def registrarUsuario(request):
     elUsuario.paisOrigen = paisOrigen
     elUsuario.biografia = biografia
     elUsuario.foto = foto 
+
     
     if elUsuario.registrarse() == "TRUE":	
         return render_to_response('respuestaMensaje.xml', {'mensajeRespuesta': "Se ha agregado satisfactoriamente el usuario "+elUsuario.nickName},mimetype='application/xml')
     elif elUsuario.registrarse() == "Error":
+	inicializarLogs()
 	logging.error('EU-001:El usuario ' +elUsuario.nickName+ ' ya se encuentra registrado')
         return render_to_response('errorMensaje.xml', {'errorMensaje': "El usuario "+elUsuario.nickName+" ya se encuentra registrado"},mimetype='application/xml')
     else:
