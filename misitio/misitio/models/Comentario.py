@@ -199,29 +199,6 @@ class Comentario:
             return "FALSE"
 
 ############################################################
-#---------------------- Lista Respuesta--------------------#
-#	Procedimiento que se encarga de listar		   #
-#	las respuestas dadas a un comentario en		   #
-#	especifico, se muestra el arbol de respuestas	   #
-#	segun su jerarquia.				   #
-############################################################
-    def listaRespuesta(usuarioRespuesta,idComentario):
-	
-        pool = ConnectionPool('baseDeDatos')
-        col_fam = pycassa.ColumnFamily(pool, 'Comentario')
-        resultado = col_fam.get_range(column_start='admiteRespuesta', column_finish='usuarioRespuesta')
-        encontrado = False
-        listaDeComentarios = []
-        for key,columns in resultado:
-            if len(columns)>6 and columns['usuarioRespuesta'] == usuarioRespuesta and columns['idComentario'] == idComentario:
-                listaDeComentarios.append(columns['usuarioRespuesta']+":"+columns['nickName']+":"+columns['texto'])
-                encontrado = True
-        if(encontrado):
-            return listaDeComentarios
-        else:
-            return "FALSE"
-
-############################################################
 #----------------- Lista Etiqueta--------------------------#
 #	Procedimiento que se encarga de listar		   #
 #	los datos de comentarios que contengan		   #
@@ -231,22 +208,22 @@ class Comentario:
 #	para luego buscar el comentario y mostrar sus      #
 #	datos						   #  
 ############################################################
-    def listaEtiquetas(nombreEtiqueta):
+def listaEtiquetas(nombreEtiqueta):
 	
-        pool = ConnectionPool('baseDeDatos')
-        col_fam = pycassa.ColumnFamily(pool, 'Etiqueta')
-        resultado = col_fam.get_range(column_start='idComentario', column_finish='nombreEtiqueta')
-        encontrado = False
-        listaDeDatos = []
-        for key,columns in resultado:
-            if columns['nombreEtiqueta'] == nombreEtiqueta:
-                listaDeDatos.append(columns['idComentario']+":"+columns['nickName'])
-                encontrado = True
+    pool = ConnectionPool('baseDeDatos')
+    col_fam = pycassa.ColumnFamily(pool, 'Etiqueta')
+    resultado = col_fam.get_range(column_start='idComentario', column_finish='nombreEtiqueta')
+    encontrado = False
+    listaDeDatos = []
+    for key,columns in resultado:
+        if columns['nombreEtiqueta'] == nombreEtiqueta:
+            listaDeDatos.append(columns['idComentario']+":"+columns['nickName'])
+            encontrado = True
 
-        if(encontrado):
-            return listaDeDatos
-        else:
-            return "FALSE"
+    if(encontrado):
+        return listaDeDatos
+    else:
+        return "FALSE"
 
 ############################################################
 #------------ Lista comentarios con etiquetas--------------#
@@ -255,18 +232,40 @@ class Comentario:
 #	dado el idComentario y el nickName, siendo         #
 #	estos los identificadores de un comentario	   #
 ############################################################
-    def listarComentariosConEtiqueta(idComentario,nickName):
-        try:    
-            listaDeComentarios = ' '
-            pool = ConnectionPool('baseDeDatos')
-            col_fam = pycassa.ColumnFamily(pool, 'Comentario')
-            resultado = col_fam.get(idComentario,columns=['nickName','texto'])
-            listaDeComentarios = resultado['texto']+":"
-        except Exception: 
-            return " "
-        else:
-            return listaDeComentarios
+def listarComentariosConEtiqueta(idComentario,nickName):
+    try:    
+        listaDeComentarios = ' '
+        pool = ConnectionPool('baseDeDatos')
+        col_fam = pycassa.ColumnFamily(pool, 'Comentario')
+        resultado = col_fam.get(idComentario,columns=['nickName','texto'])
+        listaDeComentarios = resultado['texto']+":"
+    except Exception: 
+        return " "
+    else:
+        return listaDeComentarios
 
+############################################################
+#---------------------- Lista Respuesta--------------------#
+#	Procedimiento que se encarga de listar		   #
+#	las respuestas dadas a un comentario en		   #
+#	especifico, se muestra el arbol de respuestas	   #
+#	segun su jerarquia.				   #
+############################################################
+def listaRespuesta(usuarioRespuesta,idComentario):
+	
+    pool = ConnectionPool('baseDeDatos')
+    col_fam = pycassa.ColumnFamily(pool, 'Comentario')
+    resultado = col_fam.get_range(column_start='admiteRespuesta', column_finish='usuarioRespuesta')
+    encontrado = False
+    listaDeComentarios = []
+    for key,columns in resultado:
+        if len(columns)>6 and columns['usuarioRespuesta'] == usuarioRespuesta and columns['idComentario'] == idComentario:
+            listaDeComentarios.append(columns['usuarioRespuesta']+":"+columns['nickName']+":"+columns['texto'])
+            encontrado = True
+    if(encontrado):
+        return listaDeComentarios
+    else:
+        return "FALSE"
 ############################################################
 #-----------------------Contar me gusta--------------------#
 #	Procedimiento que retorna un entero con el 	   #
@@ -324,7 +323,7 @@ def listaComentario(nickName):
     encontrado = False
     listaDeComentarios = []
     for key,columns in resultado:
-        if columns['nickName'] == nickName and len(columns) == 6:
+        if columns['nickName'] == nickName and len(columns) == 5:
             meGusta = contarMeGusta(key)
             noMeGusta = contarNoMeGusta(key)
 	    if(meGusta == "FALSE"):

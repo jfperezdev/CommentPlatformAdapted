@@ -69,8 +69,9 @@ def registrarComentario(request):
     elToken.ip = ip
   
     miToken = elToken.validarToken()
-    elId = elComentario.registrarComentario(etiquetas)  
+      
     if  miToken == "TRUE":
+	elId = elComentario.registrarComentario(etiquetas)
         if elId != "FALSE":
        	    return render_to_response('nuevoComentario.xml', {'mensajeRespuesta': "Se ha agregado satisfactoriamente el Comentario el dia: "+elComentario.fecha,'idComentario': elId},mimetype='application/xml')
 	else:
@@ -173,15 +174,17 @@ def listarComentario(request,nickName):
     	i = 0
         while i < len(listaDeComentarios):
             valores = listaDeComentarios[i].split(':')
+	    subetiqueta = "\n     <Comentario>"
 	    identificador = "\n     <idComentario>"+valores[0]+"</idComentario>"
 	    usuario = "\n     <nickName>"+valores[1]+"</nickName>"
 	    texto = "\n     <texto>"+valores[2]+"</texto>"
 	    token = "\n     <token>"+valores[3]+"</token>"
 	    meGusta = "\n     <meGusta>"+valores[4]+"</meGusta>"
-	    noMeGusta = "\n     <noMeGusta>"+valores[5]+"</noMeGusta>\n"
-	    datos = datos + identificador + usuario + texto + token + meGusta + noMeGusta
+	    noMeGusta = "\n     <noMeGusta>"+valores[5]+"</noMeGusta>"
+	    subetiqueta2 = "\n     </Comentario>"
+	    datos = datos + subetiqueta+ identificador + usuario + texto + token + meGusta + noMeGusta + subetiqueta2
 	    i = i + 1
-	datos = datos + "\n<listaComentario>"
+	datos = datos + "\n</listaComentario>"
 	return HttpResponse(datos, content_type= "application/xml")
 
 ############################################################
@@ -216,7 +219,7 @@ def listarRespuesta(request):
 	    texto = "\n     <texto>"+valores[2]+"</texto>\n"
             datos = datos + usuario + usuarioResp + texto
 	    i = i + 1
-	datos = datos + "\n<listaRespuesta>"
+	datos = datos + "\n</listaRespuesta>"
 	return HttpResponse(datos, content_type= "application/xml")
 
 ############################################################
